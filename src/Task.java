@@ -1,5 +1,5 @@
 public class Task {
-   // int id;
+    int id;
     String name;
     String description;
     byte status;//я не зря решил память поэкономить? или это не актуально, и можно было делать int и даже String?
@@ -16,6 +16,14 @@ public class Task {
                 ", description='" + description + '\'' +
                 ", status=" + getStatus(status) +
                 '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getStatus(byte status){

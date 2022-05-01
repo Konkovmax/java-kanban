@@ -7,6 +7,11 @@ public class Main {
         manager.printTask();
         System.out.println("Epics list:");
         manager.printEpic();
+        updateStatus(manager);
+        System.out.println("Updated tasks list:");
+        manager.printTask();
+        System.out.println(" Updated epics list:");
+        manager.printEpic();
 
 
 
@@ -26,10 +31,28 @@ public class Main {
         Subtask subtask3 = new Subtask("visibility of variables","",(byte)0);
         manager.addSubtask(epic1,subtask1);
         manager.addSubtask(epic2,subtask2);
-        manager.addSubtask(epic1,subtask3);
+        manager.addSubtask(epic2,subtask3);
+    }
 
+    public static void updateStatus(Manager manager){
+        //update tasks status
+        manager.taskList.get(0).status=2;
+        manager.updateTask(manager.taskList.get(0));
+        manager.taskList.get(1).status=1;
+        // update subtasks status
+        manager.updateTask(manager.taskList.get(1));
+        manager.epicList.get(2).subtaskList.get(4).status=1;
+        manager.updateSubtask(manager.epicList.get(2), manager.epicList.get(2).subtaskList.get(4));
+        manager.epicList.get(3).subtaskList.get(6).status=2;
+        manager.updateSubtask(manager.epicList.get(3), manager.epicList.get(3).subtaskList.get(6));
+        //update epics name
+        manager.epicList.get(2).name="NEW preparation to sprint";
+        manager.updateEpic(manager.epicList.get(2));
+    }
 
-
+    public void deleteData(Manager manager){
+        manager.deleteTask(manager.taskList.get(1));
+        manager.
     }
 
 }
