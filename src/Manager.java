@@ -22,7 +22,7 @@ public class Manager {
         subtask.setId(idMaker);
         epic.subtaskList.put(idMaker, subtask);
         idMaker++;
-        epic.status = setEpicStatus(epic);
+        epic.setEpicStatus();
     }
 
     public void updateTask(Task task) {
@@ -33,13 +33,17 @@ public class Manager {
         epicList.put(epic.getId(), epic);
     }
 
-    public void updateSubtask(Epic epic, Subtask subtask) {
-        epic.subtaskList.put(subtask.getId(), subtask);
-        epic.status = setEpicStatus(epic);
+    public void updateSubtask(Subtask subtask) {
+        for (Epic epic : epicList.values()) {
+            if (epic.subtaskList.containsKey(subtask.getId())){
+                epic.subtaskList.put(subtask.getId(), subtask);
+                epic.setEpicStatus();
+            }
+        }
     }
 
-    public void deleteTask(Task task) {
-        taskList.remove(task.getId());
+    public void deleteTask(int id) {
+        taskList.remove(id);
     }
 
     public void deleteEpic(int id) {
@@ -48,11 +52,33 @@ public class Manager {
 
     public void deleteSubtask(int id) {
         for (Epic epic : epicList.values()) {
-            if (epic.subtaskList.containsKey(id))
-                epic.status = setEpicStatus(epic);
-
+            if (epic.subtaskList.containsKey(id)){
+                epic.subtaskList.remove(id);
+                epic.setEpicStatus();
+            }
         }
 
+    }
+
+    public void removeAll(){//point 2.2 technical specification
+        taskList.clear();
+        epicList.clear();
+    }
+
+    public Task getTaskById(int id){
+        Task targetTask=new Task("Task not found","",(byte)(-1));
+        if(taskList.containsKey(id)){
+            targetTask=taskList.get(id);
+        }else if (epicList.containsKey(id)){
+            targetTask=epicList.get(id);
+        }else {
+            for (Epic epic : epicList.values()) {
+                if (epic.subtaskList.containsKey(id)) {
+                    targetTask=epic.subtaskList.get(id);
+                }
+            }
+        }
+        return targetTask;
     }
 
     public void printTask() {
@@ -70,23 +96,10 @@ public class Manager {
         }
     }
 
-    public void printSubtask(Epic epic) {
+    public void printSubtask(Epic epic) {// point 3.1 technical specification
         for (Subtask subtask : epic.subtaskList.values()) {
             System.out.println("Subtask: " + subtask);
         }
     }
 
-    public byte setEpicStatus(Epic epic) {
-        byte statusSum = 0;
-        int result;
-        for (Subtask subtask : epic.subtaskList.values()) {
-            statusSum += subtask.status;
-        }
-        if (statusSum == 0) {
-            result = 0;
-        } else result = ((statusSum / epic.subtaskList.size()) == 2) ? 2 : 1;
-        return (byte) result;
     }
-
-
-}

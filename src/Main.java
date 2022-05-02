@@ -3,18 +3,20 @@ public class Main {
     public static void main(String[] args) {
         Manager manager = new Manager();
         fillData(manager);
-        System.out.println("Tasks list:");
+        System.out.println(" Tasks list:");
         manager.printTask();
-        System.out.println("Epics list:");
+        System.out.println(" Epics list:");
         manager.printEpic();
         updateStatus(manager);
-        System.out.println("Updated tasks list:");
+        System.out.println(" Updated tasks list:");
         manager.printTask();
         System.out.println(" Updated epics list:");
         manager.printEpic();
-
-
-
+        deleteData(manager);
+        System.out.println(" Tasks list after removal:");
+        manager.printTask();
+        System.out.println(" Epics list after removal:");
+        manager.printEpic();
     }
 
     public static void fillData(Manager manager){
@@ -35,24 +37,31 @@ public class Main {
     }
 
     public static void updateStatus(Manager manager){
+        Task task;
         //update tasks status
-        manager.taskList.get(0).status=2;
-        manager.updateTask(manager.taskList.get(0));
-        manager.taskList.get(1).status=1;
+        task = manager.getTaskById(0);
+        task.status=2;
+        manager.updateTask(task);
+        task = manager.getTaskById(1);
+        task.status=1;
+        manager.updateTask(task);
         // update subtasks status
-        manager.updateTask(manager.taskList.get(1));
-        manager.epicList.get(2).subtaskList.get(4).status=1;
-        manager.updateSubtask(manager.epicList.get(2), manager.epicList.get(2).subtaskList.get(4));
-        manager.epicList.get(3).subtaskList.get(6).status=2;
-        manager.updateSubtask(manager.epicList.get(3), manager.epicList.get(3).subtaskList.get(6));
+        task = manager.getTaskById(4);
+        task.status=1;
+        manager.updateSubtask((Subtask) task);
+        task = manager.getTaskById(6);
+        task.status=2;
+        manager.updateSubtask((Subtask) task);
         //update epics name
-        manager.epicList.get(2).name="NEW preparation to sprint";
-        manager.updateEpic(manager.epicList.get(2));
+        task = manager.getTaskById(2);
+        task.name="NEW preparation to sprint";
+        manager.updateEpic((Epic)task);
     }
 
-    public void deleteData(Manager manager){
-        manager.deleteTask(manager.taskList.get(1));
-        manager.
+    public static void deleteData(Manager manager){
+        manager.deleteTask(1);
+        manager.deleteEpic(2);
+        manager.deleteSubtask(6);
     }
 
 }
