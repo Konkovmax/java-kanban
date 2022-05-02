@@ -2,9 +2,9 @@ public class Task {
     int id;
     String name;
     String description;
-    byte status;//я не зря решил память поэкономить? или это не актуально, и можно было делать int и даже String?
+    Status status;
 
-    public Task(String name, String description, byte status) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -14,7 +14,7 @@ public class Task {
     public String toString() {
         return " {name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + getStatus(status) +
+                ", status=" + status +
                 '}';
     }
 
@@ -26,11 +26,4 @@ public class Task {
         this.id = id;
     }
 
-    public String getStatus(byte status){
-        String result;
-        if(status == 0){
-            result="NEW";
-        } else result=(status == 1)?"IN_PROGRESS":"DONE";
-    return result;
-    }
 }

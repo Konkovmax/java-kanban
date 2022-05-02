@@ -3,23 +3,30 @@ import java.util.HashMap;
 public class Epic extends Task{
     HashMap<Integer, Subtask> subtaskList= new HashMap<>();
 
-    public Epic(String name, String description, byte status) {
+    public Epic(String name, String description, Status status) {
         super(name, description, status);
     }
 
     public Epic(String name, String description) {
-        super(name, description, (byte)0);
+        super(name, description, Status.NEW);
     }
 
     public void setEpicStatus() {
         byte statusSum = 0;
-        int result;
+        Status result;
         for (Subtask subtask : subtaskList.values()) {
-            statusSum += subtask.status;
+            if(subtask.status==Status.DONE){
+                statusSum +=2;
+            }
+            if(subtask.status==Status.IN_PROGRESS){
+                statusSum+=1;
+            }
         }
         if (statusSum == 0) {
-            result = 0;
-        } else result = ((statusSum / subtaskList.size()) == 2) ? 2 : 1;
-        this.status= (byte) result;
+            result = Status.NEW;
+        } else {
+            result = ((statusSum / subtaskList.size()) == 2) ? Status.DONE : Status.IN_PROGRESS;
+        }
+        this.status = result;
     }
 }
