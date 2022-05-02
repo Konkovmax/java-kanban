@@ -28,12 +28,12 @@ public class Main {
         Epic epic2 = new Epic("checklist for sprint", "to minimize mistakes");
         manager.addEpic(epic1);
         manager.addEpic(epic2);
-        Subtask subtask1 = new Subtask("Initialisation in constructor","", Status.NEW);
-        Subtask subtask2 = new Subtask("Line between methods","",Status.DONE);
-        Subtask subtask3 = new Subtask("visibility of variables","",Status.NEW);
-        manager.addSubtask(epic1,subtask1);
-        manager.addSubtask(epic2,subtask2);
-        manager.addSubtask(epic2,subtask3);
+        Subtask subtask1 = new Subtask("Initialisation in constructor","", Status.NEW, 2);
+        Subtask subtask2 = new Subtask("Line between methods","",Status.DONE, 3);
+        Subtask subtask3 = new Subtask("visibility of variables","",Status.NEW, 3);
+        manager.addSubtask(subtask1);
+        manager.addSubtask(subtask2);
+        manager.addSubtask(subtask3);
     }
 
     public static void updateStatus(Manager manager){

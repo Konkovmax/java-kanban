@@ -4,25 +4,26 @@ public class Manager {
 
     HashMap<Integer, Task> tasks = new HashMap<>();
     HashMap<Integer, Epic> epics = new HashMap<>();
+    HashMap<Integer, Subtask> subtasks = new HashMap<>();
     int id = 0;
 
     public void addTask(Task task) {
         task.setId(id);
         tasks.put(id, task);
-        id++;
+        generateNewId();
     }
 
     public void addEpic(Epic epic) {
         epic.setId(id);
         epics.put(id, epic);
-        id++;
+        generateNewId();
     }
 
-    public void addSubtask(Epic epic, Subtask subtask) {
+    public void addSubtask(Subtask subtask) {
         subtask.setId(id);
-        epic.subtaskList.put(id, subtask);
-        id++;
-        epic.setEpicStatus();
+        subtasks.put(id, subtask);
+        generateNewId();
+        epics.get(subtask.epicId).setStatus(setEpicStatus(subtask.epicId));
     }
 
     public void updateTask(Task task) {
@@ -34,12 +35,8 @@ public class Manager {
     }
 
     public void updateSubtask(Subtask subtask) {
-        for (Epic epic : epics.values()) {
-            if (epic.subtaskList.containsKey(subtask.getId())){
-                epic.subtaskList.put(subtask.getId(), subtask);
-                epic.setEpicStatus();
-            }
-        }
+        subtasks.put(subtask.getId(), subtask);
+        epics.get(subtask.epicId).setStatus(setEpicStatus(subtask.epicId));
     }
 
     public void deleteTask(int id) {
@@ -51,18 +48,16 @@ public class Manager {
     }
 
     public void deleteSubtask(int id) {
-        for (Epic epic : epics.values()) {
-            if (epic.subtaskList.containsKey(id)){
-                epic.subtaskList.remove(id);
-                epic.setEpicStatus();
-            }
-        }
+        int epicId = subtasks.get(id).epicId;
+        subtasks.remove(id);
+        epics.get(epicId).setStatus(setEpicStatus(epicId));
 
     }
 
     public void removeAll(){//point 2.2 technical specification
         tasks.clear();
         epics.clear();
+        subtasks.clear();
     }
 
     public Task getTaskById(int id){
@@ -71,12 +66,8 @@ public class Manager {
             targetTask= tasks.get(id);
         }else if (epics.containsKey(id)){
             targetTask= epics.get(id);
-        }else {
-            for (Epic epic : epics.values()) {
-                if (epic.subtaskList.containsKey(id)) {
-                    targetTask=epic.subtaskList.get(id);
-                }
-            }
+        }else if (subtasks.containsKey(id)) {
+            targetTask=subtasks.get(id);
         }
         return targetTask;
     }
@@ -91,15 +82,45 @@ public class Manager {
         for (Epic epic : epics.values()) {
             System.out.println("Epic: " + epic);
             System.out.println("  Subtasks list:");
-            printSubtask(epic);
+            printSubtask(epic.id);
             System.out.println(" ");
         }
     }
 
-    public void printSubtask(Epic epic) {// point 3.1 technical specification
-        for (Subtask subtask : epic.subtaskList.values()) {
-            System.out.println("Subtask: " + subtask);
+    public void printSubtask(int epicId) {
+        for (Subtask subtask : subtasks.values()) {
+            if(subtask.epicId==epicId) {
+                System.out.println("Subtask: " + subtask);
+            }
         }
     }
 
+    public Status setEpicStatus(int epicId) {
+        int statusSum = 0;
+        int subtaskAmount=0;
+        Status result;
+        for (Subtask subtask : subtasks.values()) {
+            if(subtask.epicId==epicId) {
+                subtaskAmount++;
+                if (subtask.status == Status.DONE) {
+                    statusSum += 2;
+                }
+                if (subtask.status == Status.IN_PROGRESS) {
+                    statusSum += 1;
+                }
+            }
+        }
+        if (statusSum == 0) {
+            result = Status.NEW;
+        } else {
+            result = (statusSum / subtaskAmount == 2) ? Status.DONE : Status.IN_PROGRESS;
+        }
+        return result;
     }
+
+    public void generateNewId(){
+        id++;
+    }
+
+
+}
