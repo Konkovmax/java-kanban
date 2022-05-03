@@ -87,18 +87,17 @@ public class Manager {
         for (Epic epic : epics.values()) {
             System.out.println("Epic: " + epic);
             System.out.println("  Subtasks list:");
-            printEpicsSubtasks(epic.id);
+            printEpicsSubtasks(epic);
             System.out.println(" ");
         }
     }
 
-    public void printEpicsSubtasks(int epicId) {
-        for (Subtask subtask : subtasks.values()) {
-            if (subtask.epicId == epicId) {
-                System.out.println("Subtask: " + subtask);
-            }
+    public void printEpicsSubtasks(Epic epic) {
+        for (Subtask subtask : epic.subtasks.values()) {
+            System.out.println("Subtask: " + subtask);
         }
     }
+
 
     public void printSubtasks() {
         for (Subtask subtask : subtasks.values()) {
