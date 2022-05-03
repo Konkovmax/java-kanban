@@ -22,8 +22,11 @@ public class Manager {
     public void addSubtask(Subtask subtask) {
         subtask.setId(id);
         subtasks.put(id, subtask);
+        //я подумал, что id в списке подзадач эпика и id для отдельного списка подзадач
+        // должны быть одинаковые, но возможно, потом это окажется не правильным решением
+        epics.get(subtask.epicId).subtasks.put(id, subtask);
+        epics.get(subtask.epicId).setStatus(updateEpicStatus(subtask.epicId));
         generateNewId();
-        epics.get(subtask.epicId).setStatus(setEpicStatus(subtask.epicId));
     }
 
     public void updateTask(Task task) {
@@ -36,7 +39,8 @@ public class Manager {
 
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
-        epics.get(subtask.epicId).setStatus(setEpicStatus(subtask.epicId));
+        epics.get(subtask.epicId).subtasks.put(subtask.getId(), subtask);
+        epics.get(subtask.epicId).setStatus(updateEpicStatus(subtask.epicId));
     }
 
     public void deleteTask(int id) {
@@ -50,57 +54,64 @@ public class Manager {
     public void deleteSubtask(int id) {
         int epicId = subtasks.get(id).epicId;
         subtasks.remove(id);
-        epics.get(epicId).setStatus(setEpicStatus(epicId));
+        epics.get(epicId).subtasks.remove(id);
+        epics.get(epicId).setStatus(updateEpicStatus(epicId));
 
     }
 
-    public void removeAll(){//point 2.2 technical specification
+    public void removeAll() {//point 2.2 technical specification
         tasks.clear();
         epics.clear();
         subtasks.clear();
     }
 
-    public Task getTaskById(int id){
-        Task targetTask=null;
-        if(tasks.containsKey(id)){
-            targetTask= tasks.get(id);
-        }else if (epics.containsKey(id)){
-            targetTask= epics.get(id);
-        }else if (subtasks.containsKey(id)) {
-            targetTask=subtasks.get(id);
+    public Task getTaskById(int id) {
+        Task targetTask = null;
+        if (tasks.containsKey(id)) {
+            targetTask = tasks.get(id);
+        } else if (epics.containsKey(id)) {
+            targetTask = epics.get(id);
+        } else if (subtasks.containsKey(id)) {
+            targetTask = subtasks.get(id);
         }
         return targetTask;
     }
 
-    public void printTask() {
+    public void printTasks() {
         for (Task task : tasks.values()) {
             System.out.println("Task: " + task);
         }
     }
 
-    public void printEpic() {
+    public void printEpics() {
         for (Epic epic : epics.values()) {
             System.out.println("Epic: " + epic);
             System.out.println("  Subtasks list:");
-            printSubtask(epic.id);
+            printEpicsSubtasks(epic.id);
             System.out.println(" ");
         }
     }
 
-    public void printSubtask(int epicId) {
+    public void printEpicsSubtasks(int epicId) {
         for (Subtask subtask : subtasks.values()) {
-            if(subtask.epicId==epicId) {
+            if (subtask.epicId == epicId) {
                 System.out.println("Subtask: " + subtask);
             }
         }
     }
 
-    public Status setEpicStatus(int epicId) {
+    public void printSubtasks() {
+        for (Subtask subtask : subtasks.values()) {
+            System.out.println("Subtask: " + subtask);
+        }
+    }
+
+    public Status updateEpicStatus(int epicId) {
         int statusSum = 0;
-        int subtaskAmount=0;
+        int subtaskAmount = 0;
         Status result;
         for (Subtask subtask : subtasks.values()) {
-            if(subtask.epicId==epicId) {
+            if (subtask.epicId == epicId) {
                 subtaskAmount++;
                 if (subtask.status == Status.DONE) {
                     statusSum += 2;
@@ -118,7 +129,7 @@ public class Manager {
         return result;
     }
 
-    public void generateNewId(){
+    private void generateNewId() {
         id++;
     }
 

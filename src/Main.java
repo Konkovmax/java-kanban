@@ -4,19 +4,19 @@ public class Main {
         Manager manager = new Manager();
         fillData(manager);
         System.out.println(" Tasks list:");
-        manager.printTask();
+        manager.printTasks();
         System.out.println(" Epics list:");
-        manager.printEpic();
+        manager.printEpics();
         updateStatus(manager);
         System.out.println(" Updated tasks list:");
-        manager.printTask();
+        manager.printTasks();
         System.out.println(" Updated epics list:");
-        manager.printEpic();
+        manager.printEpics();
         deleteData(manager);
         System.out.println(" Tasks list after removal:");
-        manager.printTask();
+        manager.printTasks();
         System.out.println(" Epics list after removal:");
-        manager.printEpic();
+        manager.printEpics();
     }
 
     public static void fillData(Manager manager){
