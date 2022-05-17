@@ -34,6 +34,8 @@ public interface TaskManager {
 
     void printViewHistory();
 
-    Status calculateEpicStatus(int epicId);
+    Task getSubtaskById(int id);
+
+    Task getEpicById(int id);
 
 }

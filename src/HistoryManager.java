@@ -2,7 +2,7 @@ import java.util.List;
 
 public interface HistoryManager {
 
-    void updateViewHistory(Task task);
+    void add(Task task);
 
     List<Task> getHistory();
 

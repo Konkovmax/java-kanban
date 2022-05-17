@@ -1,18 +1,22 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
-    List<Task> viewHistory = new ArrayList<>();
+public class InMemoryHistoryManager implements HistoryManager {
+    private List<Task> viewHistory = new ArrayList<>();
+    private int maxRecordsQuantity;
 
+    public InMemoryHistoryManager(int maxRecordsQuantity) {
+        this.maxRecordsQuantity = maxRecordsQuantity;
+    }
 
     @Override
-    public List<Task> getHistory(){
+    public List<Task> getHistory() {
         return viewHistory;
     }
 
     @Override
-    public void updateViewHistory(Task task){
-        if (viewHistory.size()==10){
+    public void add(Task task) {
+        if (viewHistory.size() == maxRecordsQuantity) {
             viewHistory.remove(0);
         }
         viewHistory.add(task);
