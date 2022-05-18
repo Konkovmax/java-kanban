@@ -1,10 +1,12 @@
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks = new HashMap<>();
-    private HashMap<Integer, Epic> epics = new HashMap<>();
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+    private Map<Integer, Task> tasks = new HashMap<>();
+    private Map<Integer, Epic> epics = new HashMap<>();
+    private Map<Integer, Subtask> subtasks = new HashMap<>();
     private HistoryManager history = Managers.getDefaultHistory();
     private int id = 0;
 
@@ -168,13 +170,18 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void printViewHistory() {
         System.out.println(" Viewed tasks from latest to oldest");
-        for (int i = (history.getHistory().size() - 1); i >= 0; i--) {
-            System.out.println(history.getHistory().get(i));
+        for (int i = (history.getViewHistory().size() - 1); i >= 0; i--) {
+            System.out.println(history.getViewHistory().get(i));
         }
     }
 
     private void generateNewId() {
         id++;
+    }
+
+    @Override
+    public List<Task> getHistory(){
+        return history.getViewHistory();
     }
 
 

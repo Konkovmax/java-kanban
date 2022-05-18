@@ -38,4 +38,6 @@ public interface TaskManager {
 
     Task getEpicById(int id);
 
+    List<Task> getHistory();
+
 }

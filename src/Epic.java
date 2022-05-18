@@ -1,9 +1,11 @@
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-public class Epic extends Task implements EpicManager {
-
-    private HashMap<Integer, Subtask> subtasks = new HashMap<>();
+public class Epic extends Task  {
+    //Такого в Практикуме не было, поэтому сделал интерфейс Map на основе того что нашел в интернете,
+    // если я правильно понял твою идею
+    private Map<Integer, Subtask> subtasks = new HashMap<>();
 
     public Epic(String name, String description, Status status) {
         super(name, description, status);
@@ -29,17 +31,14 @@ public class Epic extends Task implements EpicManager {
         return result;
     }
 
-    @Override
     public void setStatus(Status status) {
         this.status = status;
     }
 
-    @Override
-    public HashMap<Integer, Subtask> getSubtasks() {
+    public Map<Integer, Subtask> getSubtasks() {
         return subtasks;
     }
 
-    @Override
     public void setSubtasks(HashMap<Integer, Subtask> subtasks) {
         this.subtasks = subtasks;
     }
