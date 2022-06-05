@@ -3,8 +3,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Epic extends Task {
-    //Такого в Практикуме не было, поэтому сделал интерфейс Map на основе того что нашел в интернете,
-    // если я правильно понял твою идею
+
     private Map<Integer, Subtask> subtasks = new HashMap<>();
 
     public Epic(String name, String description, Status status) {

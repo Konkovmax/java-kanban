@@ -14,7 +14,10 @@ public class Main {
         System.out.println("Task id" + 5 + manager.getSubtaskById(5));
         System.out.println("Task id" + 3 + manager.getEpicById(3));
         manager.printViewHistory();
-
+        manager.deleteTask(0);
+        manager.printViewHistory();
+        manager.deleteEpic(3);
+        manager.printViewHistory();
     }
 
     public static void fillData(TaskManager manager) {
@@ -26,13 +29,12 @@ public class Main {
         Epic epic2 = new Epic("checklist for sprint", "to minimize mistakes");
         manager.addEpic(epic1);
         manager.addEpic(epic2);
-        Subtask subtask1 = new Subtask("Initialisation in constructor", "", Status.NEW, 2);
+        Subtask subtask1 = new Subtask("Initialisation in constructor", "", Status.NEW, 3);
         Subtask subtask2 = new Subtask("Line between methods", "", Status.DONE, 3);
         Subtask subtask3 = new Subtask("visibility of variables", "", Status.NEW, 3);
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
     }
-
 
 }

@@ -54,11 +54,17 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTask(int id) {
         tasks.remove(id);
+        history.remove(id);
     }
 
     @Override
     public void deleteEpic(int id) {
+        for (Subtask subtask : epics.get(id).getSubtasks().values()) {
+            history.remove(subtask.getId());
+        }
+        epics.get(id).getSubtasks().clear();
         epics.remove(id);
+        history.remove(id);
     }
 
     @Override
@@ -67,6 +73,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.remove(id);
         epics.get(epicId).getSubtasks().remove(id);
         epics.get(epicId).setStatus(calculateEpicStatus(epicId));
+        history.remove(id);
 
     }
 
@@ -84,7 +91,7 @@ public class InMemoryTaskManager implements TaskManager {
             targetTask = subtasks.get(id);
         }
 
-        history.add(targetTask);
+        history.linkLast(targetTask);
         return targetTask;
     }
 
@@ -94,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(id)) {
             targetTask = tasks.get(id);
         }
-        history.add(targetTask);
+        history.linkLast(targetTask);
         return targetTask;
     }
 
@@ -104,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             targetTask = epics.get(id);
         }
-        history.add(targetTask);
+        history.linkLast(targetTask);
         return targetTask;
     }
 
@@ -113,7 +120,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printTasks() {
         for (Task task : tasks.values()) {
             System.out.println("Task: " + task);
-            history.add(task);
+            history.linkLast(task);
         }
     }
 
@@ -121,7 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printEpics() {
         for (Epic epic : epics.values()) {
             System.out.println("Epic: " + epic);
-            history.add(epic);
+            history.linkLast(epic);
             System.out.println("  Subtasks list:");
             printEpicSubtasks(epic);
             System.out.println(" ");
@@ -132,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printEpicSubtasks(Epic epic) {
         for (Subtask subtask : epic.getSubtasks().values()) {
             System.out.println("Subtask: " + subtask);
-            history.add(subtask);
+            history.linkLast(subtask);
         }
     }
 
@@ -140,7 +147,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printSubtasks() {
         for (Subtask subtask : subtasks.values()) {
             System.out.println("Subtask: " + subtask);
-            history.add(subtask);
+            history.linkLast(subtask);
         }
     }
 
@@ -169,8 +176,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void printViewHistory() {
+        history.getTasks();
         System.out.println(" Viewed tasks from latest to oldest");
-        for (int i = (history.getViewHistory().size() - 1); i >= 0; i--) {
+        for (int i = 0; i < history.getViewHistory().size(); i++) {
             System.out.println(history.getViewHistory().get(i));
         }
     }
