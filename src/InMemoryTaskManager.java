@@ -1,3 +1,4 @@
+import ru.practicum.objects.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public class InMemoryTaskManager implements TaskManager {
             targetTask = subtasks.get(id);
         }
 
-        history.linkLast(targetTask);
+        history.add(targetTask);
         return targetTask;
     }
 
@@ -101,7 +102,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (tasks.containsKey(id)) {
             targetTask = tasks.get(id);
         }
-        history.linkLast(targetTask);
+        history.add(targetTask);
         return targetTask;
     }
 
@@ -111,7 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(id)) {
             targetTask = epics.get(id);
         }
-        history.linkLast(targetTask);
+        history.add(targetTask);
         return targetTask;
     }
 
@@ -120,7 +121,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printTasks() {
         for (Task task : tasks.values()) {
             System.out.println("Task: " + task);
-            history.linkLast(task);
+            history.add(task);
         }
     }
 
@@ -128,7 +129,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printEpics() {
         for (Epic epic : epics.values()) {
             System.out.println("Epic: " + epic);
-            history.linkLast(epic);
+            history.add(epic);
             System.out.println("  Subtasks list:");
             printEpicSubtasks(epic);
             System.out.println(" ");
@@ -139,7 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printEpicSubtasks(Epic epic) {
         for (Subtask subtask : epic.getSubtasks().values()) {
             System.out.println("Subtask: " + subtask);
-            history.linkLast(subtask);
+            history.add(subtask);
         }
     }
 
@@ -147,7 +148,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void printSubtasks() {
         for (Subtask subtask : subtasks.values()) {
             System.out.println("Subtask: " + subtask);
-            history.linkLast(subtask);
+            history.add(subtask);
         }
     }
 
@@ -158,10 +159,10 @@ public class InMemoryTaskManager implements TaskManager {
         for (Subtask subtask : subtasks.values()) {
             if (subtask.getEpicId() == epicId) {
                 subtaskAmount++;
-                if (subtask.status == Status.DONE) {
+                if (subtask.getStatus() == Status.DONE) {
                     statusSum += 2;
                 }
-                if (subtask.status == Status.IN_PROGRESS) {
+                if (subtask.getStatus() == Status.IN_PROGRESS) {
                     statusSum += 1;
                 }
             }

@@ -1,3 +1,4 @@
+import ru.practicum.objects.*;
 import java.util.List;
 
 public interface TaskManager {

@@ -1,8 +1,8 @@
+import ru.practicum.objects.*;
 public class Main {
 
     public static void main(String[] args) {
         TaskManager manager = Managers.getDefault();
-
         fillData(manager);
         System.out.println(" Tasks list:");
         manager.printTasks();

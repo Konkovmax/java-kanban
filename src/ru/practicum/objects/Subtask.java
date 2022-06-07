@@ -1,3 +1,5 @@
+package ru.practicum.objects;
+
 import java.util.Objects;
 
 public class Subtask extends Task {

@@ -2,23 +2,25 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import ru.practicum.objects.Node;
+import ru.practicum.objects.Task;
+
 public class InMemoryHistoryManager implements HistoryManager {
     private List<Task> viewHistory = new ArrayList<>();
-    private Node<Task> tail;
-    HashMap<Integer, Node<Task>> customLinkedList = new HashMap<>();
+    private Node tail;
+    HashMap<Integer, Node> customLinkedList = new HashMap<>();
 
-    @Override
     public List<Task> getViewHistory() {
         return viewHistory;
     }
 
     @Override
-    public void linkLast(Task task) {
+    public void add(Task task) {
         if (customLinkedList.containsKey(task.getId())) {
             removeNode(customLinkedList.get(task.getId()));
         }
-        final Node<Task> oldTail = tail;
-        final Node<Task> newNode = new Node<>(oldTail, task, null);
+        final Node oldTail = tail;
+        final Node newNode = new Node(oldTail, task, null);
         tail = newNode;
         if (oldTail != null) {
             oldTail.next = newNode;
@@ -26,7 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         customLinkedList.put(task.getId(), newNode);
     }
 
-    void removeNode(Node<Task> node) {
+    private void removeNode(Node node) {
         if (node.prev != null) {
             node.prev.next = node.next;
         } else {
@@ -48,10 +50,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         }
     }
 
-    @Override
     public void getTasks() {
         viewHistory.clear();
-        Node<Task> node = tail;
+        Node node = tail;
         while (node != null) {
             if (customLinkedList.containsValue(node)) {
                 viewHistory.add(node.data);
