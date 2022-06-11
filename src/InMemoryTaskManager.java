@@ -1,4 +1,5 @@
 import ru.practicum.objects.*;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +178,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void printViewHistory() {
-        history.getTasks();
         System.out.println(" Viewed tasks from latest to oldest");
         for (int i = 0; i < history.getViewHistory().size(); i++) {
             System.out.println(history.getViewHistory().get(i));
