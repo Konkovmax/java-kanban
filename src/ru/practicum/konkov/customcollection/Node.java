@@ -1,4 +1,6 @@
-package ru.practicum.objects;
+package ru.practicum.konkov.customcollection;
+
+import ru.practicum.konkov.task.Task;
 
 public class Node {
     public Task data;

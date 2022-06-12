@@ -1,7 +1,7 @@
-import ru.practicum.objects.*;
+package ru.practicum.konkov.managers;
 
+import ru.practicum.konkov.task.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -31,7 +31,7 @@ public class InMemoryTaskManager implements TaskManager {
         subtask.setId(id);
         subtasks.put(id, subtask);
         int epicId = subtask.getEpicId();
-        epics.get(epicId).getSubtasks().put(id, subtask);
+        epics.get(epicId).getSubtasks().add(subtask);
         epics.get(epicId).setStatus(calculateEpicStatus(epicId));
         generateNewId();
     }
@@ -49,7 +49,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
-        epics.get(subtask.getEpicId()).getSubtasks().put(subtask.getId(), subtask);
+        epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
         epics.get(subtask.getEpicId()).setStatus(calculateEpicStatus(subtask.getEpicId()));
     }
 
@@ -61,7 +61,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteEpic(int id) {
-        for (Subtask subtask : epics.get(id).getSubtasks().values()) {
+        for (Subtask subtask : epics.get(id).getSubtasks()) {
             history.remove(subtask.getId());
         }
         epics.get(id).getSubtasks().clear();
@@ -139,7 +139,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void printEpicSubtasks(Epic epic) {
-        for (Subtask subtask : epic.getSubtasks().values()) {
+        for (Subtask subtask : epic.getSubtasks()) {
             System.out.println("Subtask: " + subtask);
             history.add(subtask);
         }
@@ -187,11 +187,5 @@ public class InMemoryTaskManager implements TaskManager {
     private void generateNewId() {
         id++;
     }
-
-    @Override
-    public List<Task> getHistory() {
-        return history.getViewHistory();
-    }
-
 
 }

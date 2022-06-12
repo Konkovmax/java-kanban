@@ -1,7 +1,8 @@
+package ru.practicum.konkov.managers;
 
 public class Managers {
 
-    static TaskManager getDefault() {
+    public static TaskManager getDefault() {
         return new InMemoryTaskManager();
     }
 

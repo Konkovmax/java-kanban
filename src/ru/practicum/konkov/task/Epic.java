@@ -1,12 +1,10 @@
-package ru.practicum.objects;
+package ru.practicum.konkov.task;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class Epic extends Task {
 
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
+    private List<Subtask> subtasks = new ArrayList<>();
 
     public Epic(String name, String description, Status status) {
         super(name, description, status);
@@ -36,11 +34,11 @@ public class Epic extends Task {
         this.status = status;
     }
 
-    public Map<Integer, Subtask> getSubtasks() {
+    public List<Subtask> getSubtasks() {
         return subtasks;
     }
 
-    public void setSubtasks(HashMap<Integer, Subtask> subtasks) {
+    public void setSubtasks(List<Subtask> subtasks) {
         this.subtasks = subtasks;
     }
 }

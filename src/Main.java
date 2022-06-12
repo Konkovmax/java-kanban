@@ -1,4 +1,6 @@
-import ru.practicum.objects.*;
+import ru.practicum.konkov.managers.*;
+import ru.practicum.konkov.task.*;
+
 public class Main {
 
     public static void main(String[] args) {

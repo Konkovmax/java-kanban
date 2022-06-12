@@ -1,4 +1,4 @@
-package ru.practicum.objects;
+package ru.practicum.konkov.task;
 
 public enum Status {
     NEW,

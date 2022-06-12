@@ -1,5 +1,7 @@
+package ru.practicum.konkov.managers;
+
 import java.util.List;
-import ru.practicum.objects.Task;
+import ru.practicum.konkov.task.Task;
 
 public interface HistoryManager {
 

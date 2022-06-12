@@ -1,4 +1,4 @@
-package ru.practicum.objects;
+package ru.practicum.konkov.task;
 
 import java.util.Objects;
 

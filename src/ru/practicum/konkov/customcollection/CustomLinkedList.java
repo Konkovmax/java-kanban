@@ -1,8 +1,10 @@
-import ru.practicum.objects.Node;
-import ru.practicum.objects.Task;
+package ru.practicum.konkov.customcollection;
+
+import ru.practicum.konkov.customcollection.Node;
+import ru.practicum.konkov.task.Task;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class CustomLinkedList {
@@ -18,7 +20,7 @@ public class CustomLinkedList {
         return newNode;
     }
 
-    public List<Task> getTasks(HashMap<Integer, Node> nodeList) {
+    public List<Task> getTasks(Map<Integer, Node> nodeList) {
         List<Task> tasks = new ArrayList<>();
         Node node = tail;
         while (node != null) {
