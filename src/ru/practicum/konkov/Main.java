@@ -1,3 +1,5 @@
+package ru.practicum.konkov;
+
 import ru.practicum.konkov.managers.*;
 import ru.practicum.konkov.task.*;
 
