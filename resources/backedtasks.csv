@@ -1,0 +1,10 @@
+id,type,name,status,description,epic
+0,TASK,study java,IN_PROGRESS,to write quality code,
+1,TASK,study encapsulation,NEW,to write very well code,
+2,EPIC,preparation to sprint,NEW,for execution project,
+3,EPIC,checklist for sprint,IN_PROGRESS,to minimize mistakes,
+4,SUBTASK,Initialisation in constructor,NEW,,3
+5,SUBTASK,Line between methods,DONE,,3
+6,SUBTASK,visibility of variables,NEW,,3
+
+5,2,0,1

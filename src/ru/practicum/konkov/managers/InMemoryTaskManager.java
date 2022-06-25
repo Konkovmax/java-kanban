@@ -6,10 +6,10 @@ import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
-    private HistoryManager history = Managers.getDefaultHistory();
+    protected Map<Integer, Task> tasks = new HashMap<>();
+    protected Map<Integer, Epic> epics = new HashMap<>();
+    protected Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected HistoryManager history = Managers.getDefaultHistory();
     private int id = 0;
 
     @Override
