@@ -45,7 +45,7 @@ public class Task {
         this.id = id;
     }
 
-    public Status getStatus(){
+    public Status getStatus() {
         return status;
     }
 
