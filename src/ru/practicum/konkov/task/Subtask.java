@@ -10,8 +10,18 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
+    public Subtask(String[] lineContents) {
+        super(lineContents);
+        this.epicId = Integer.parseInt(lineContents[5]);
+    }
+
     public int getEpicId() {
         return epicId;
+    }
+
+    public String toFileString() {
+        return id + "," + "SUBTASK" + "," + name + ","
+                + status.toString() + "," + description + "," + epicId;
     }
 
     @Override

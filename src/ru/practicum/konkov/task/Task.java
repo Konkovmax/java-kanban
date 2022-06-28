@@ -3,15 +3,23 @@ package ru.practicum.konkov.task;
 import java.util.Objects;
 
 public class Task {
-    int id;
-    String name;
-    String description;
-    Status status;
+    protected int id;
+    protected String name;
+    protected String description;
+    protected Status status;
 
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Task(String[] lineContents) {
+        this.name = lineContents[2];
+        this.description = lineContents[4];
+        this.status = Status.valueOf(lineContents[3]);
+        this.id = Integer.parseInt(lineContents[0]);
+
     }
 
     @Override
@@ -35,6 +43,11 @@ public class Task {
         int result = Objects.hash(id, name, description, status);
         result = 31 * result + name.hashCode();
         return result;
+    }
+
+    public String toFileString() {
+        return id + "," + "TASK" + "," + name + ","
+                + status.toString() + "," + description + ",";
     }
 
     public int getId() {

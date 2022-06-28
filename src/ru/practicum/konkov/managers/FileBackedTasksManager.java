@@ -1,5 +1,6 @@
 package ru.practicum.konkov.managers;
 
+import ru.practicum.konkov.exceptions.*;
 import ru.practicum.konkov.task.*;
 
 import java.io.File;
@@ -10,11 +11,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-// Привет, Денис! помню, что тебе не очень нравится, когда в одном файле куча методов, но в ТЗ сказано,
-//что main прямо тут надо сделать, и я подумал не отступать от этого
+
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     static String fileName = "backedtasks.csv";
     static File file;
+    int lastIdFromFile = 0;
 
     public FileBackedTasksManager(String fileName) {
         file = new File("." + File.separator + "resources" + File.separator, fileName);
@@ -35,6 +36,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         System.out.println(" Epics list:");
         manager.printEpics();
         manager.printViewHistory();
+
     }
 
     public static void fillData(FileBackedTasksManager manager) {
@@ -59,13 +61,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8)) {
             fileWriter.write(header + "\n");
             for (Task task : tasks.values()) {
-                fileWriter.write(taskToString(task) + "\n");
+                fileWriter.write(task.toFileString() + "\n");
             }
-            for (Task task : epics.values()) {
-                fileWriter.write(taskToString(task) + "\n");
+            for (Epic epic : epics.values()) {
+                fileWriter.write(epic.toFileString() + "\n");
             }
             for (Subtask subtask : subtasks.values()) {
-                fileWriter.write(subtaskToString(subtask) + "\n");
+                fileWriter.write(subtask.toFileString() + "\n");
             }
             fileWriter.write("\n");
             fileWriter.write(historyToString(history));
@@ -74,31 +76,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-    public String taskToString(Task task) {
-        return task.getId() + "," + getTaskType(task) + "," + task.getName() + ","
-                + task.getStatus() + "," + task.getDescription() + ",";
-    }
-
-    public String subtaskToString(Subtask task) {
-        return task.getId() + "," + getTaskType(task) + "," + task.getName() + ","
-                + task.getStatus() + "," + task.getDescription() + "," + task.getEpicId();
-    }
-
-    public TaskType getTaskType(Task task) {
-        if (task.getClass().getName().contains("Task")) {
-            return TaskType.TASK;
-        } else if (task.getClass().getName().contains("Epic")) {
-            return TaskType.EPIC;
-        } else
-            return TaskType.SUBTASK;
-    }
-
     static public void printFile(File file) {
         String fileContents = null;
         try {
             fileContents = Files.readString(file.toPath());
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время чтения файла.");
+            throw new ManagerReadException(e.getMessage());
         }
         System.out.println(fileContents + "\n\n");
     }
@@ -110,6 +94,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             fileContents = Files.readString(file.toPath());
         } catch (IOException e) {
             System.out.println("Произошла ошибка во время чтения файла.");
+            throw new ManagerReadException(e.getMessage());
         }
 
         String[] lines = fileContents.split("\n");
@@ -129,56 +114,33 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 String[] lineContents = lines[j].split(",");
                 switch (lineContents[1]) {
                     case "TASK": {
-                        manager.tasks.put(taskFromString(lineContents).getId(), taskFromString(lineContents));
+                        Task task = new Task(lineContents);
+                        manager.tasks.put(task.getId(), task);
+                        manager.updateLastId(task.getId());
                         break;
                     }
                     case "EPIC": {
-                        manager.epics.put(epicFromString(lineContents).getId(), epicFromString(lineContents));
+                        Epic epic = new Epic(lineContents);
+                        manager.epics.put(epic.getId(), epic);
+                        manager.updateLastId(epic.getId());
                         break;
                     }
                     case "SUBTASK": {
-                        manager.subtasks.put(subtaskFromString(lineContents).getId(), subtaskFromString(lineContents));
+                        Subtask subtask = new Subtask(lineContents);
+                        manager.subtasks.put(subtask.getId(), subtask);
+                        manager.updateLastId(subtask.getId());
                     }
                 }
             }
         }
+        manager.generateNewId(manager.lastIdFromFile);
         return manager;
     }
 
-    static public Task taskFromString(String[] lineContents) {// в ТЗ написано, что аргумент строка, но я подумал, что если
-        //я уже делю строку на элементы почему бы их и не передать
-        Task task = new Task(lineContents[2], lineContents[4], statusFromString(lineContents[3]));
-        task.setId(Integer.parseInt(lineContents[0]));
-        return task;
-    }
-
-    static public Subtask subtaskFromString(String[] lineContents) {
-        Subtask subtask = new Subtask(lineContents[2], lineContents[4], statusFromString(lineContents[3]), Integer.parseInt(lineContents[5]));
-        subtask.setId(Integer.parseInt(lineContents[0]));
-        return subtask;
-    }
-
-    static public Epic epicFromString(String[] lineContents) {
-        Epic epic = new Epic(lineContents[2], lineContents[4], statusFromString(lineContents[3]));
-        epic.setId(Integer.parseInt(lineContents[0]));
-        return epic;
-    }
-
-    static public Status statusFromString(String value) {
-        Status status;
-        switch (value) {
-            case "DONE": {
-                status = Status.DONE;
-                break;
-            }
-            case "IN_PROGRESS": {
-                status = Status.IN_PROGRESS;
-                break;
-            }
-            default:
-                status = Status.NEW;
+    public void updateLastId(int id) {
+        if (lastIdFromFile < id) {
+            lastIdFromFile = id;
         }
-        return status;
     }
 
     static List<Integer> historyFromString(String value) {

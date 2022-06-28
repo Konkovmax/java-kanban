@@ -2,7 +2,9 @@ package ru.practicum.konkov.managers;
 
 import ru.practicum.konkov.task.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -185,8 +187,18 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
+    public List<Task> getHistory() {
+        return history.getViewHistory();
+    }
+
     private void generateNewId() {
         id++;
     }
+
+    public void generateNewId(int id) {
+        this.id = id + 1;
+    }
+
 
 }

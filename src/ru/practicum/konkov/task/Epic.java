@@ -14,6 +14,10 @@ public class Epic extends Task {
         super(name, description, Status.NEW);
     }
 
+    public Epic(String[] lineContents) {
+        super(lineContents);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -28,6 +32,11 @@ public class Epic extends Task {
         int result = Objects.hash(super.hashCode(), subtasks);
         result = 31 * result + subtasks.hashCode();
         return result;
+    }
+
+    public String toFileString() {
+        return id + "," + "EPIC" + "," + name + ","
+                + status.toString() + "," + description + ",";
     }
 
     public void setStatus(Status status) {

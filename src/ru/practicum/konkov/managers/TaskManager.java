@@ -2,6 +2,8 @@ package ru.practicum.konkov.managers;
 
 import ru.practicum.konkov.task.*;
 
+import java.util.List;
+
 public interface TaskManager {
 
     void addTask(Task task);
@@ -39,5 +41,7 @@ public interface TaskManager {
     Task getSubtaskById(int id);
 
     Task getEpicById(int id);
+
+    List<Task> getHistory();
 
 }

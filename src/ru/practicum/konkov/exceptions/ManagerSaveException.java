@@ -1,4 +1,4 @@
-package ru.practicum.konkov.managers;
+package ru.practicum.konkov.exceptions;
 
 
 public class ManagerSaveException extends RuntimeException {
