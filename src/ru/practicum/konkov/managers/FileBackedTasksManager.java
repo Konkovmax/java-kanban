@@ -96,19 +96,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             System.out.println("Произошла ошибка во время чтения файла.");
             throw new ManagerReadException(e.getMessage());
         }
-
+        int historyLine = 0;
+        //т.к. сам метод прописан в ТЗ я не стал менять сигнатуру, но цикл разбил на 2 поменьше, согласно последнему ревью
         String[] lines = fileContents.split("\n");
         for (int j = 1; j < lines.length; j++) {
             if (lines[j].equals("")) {
-                for (int id : historyFromString(lines[j + 1])) {
-                    if (manager.tasks.containsKey(id)) {
-                        manager.history.add(manager.tasks.get(id));
-                    } else if (manager.epics.containsKey(id)) {
-                        manager.history.add(manager.epics.get(id));
-                    } else if (manager.subtasks.containsKey(id)) {
-                        manager.history.add(manager.subtasks.get(id));
-                    }
-                }
+                historyLine = j + 1;
                 break;
             } else {
                 String[] lineContents = lines[j].split(",");
@@ -133,6 +126,17 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
             }
         }
+
+        for (int id : historyFromString(lines[historyLine])) {
+            if (manager.tasks.containsKey(id)) {
+                manager.history.add(manager.tasks.get(id));
+            } else if (manager.epics.containsKey(id)) {
+                manager.history.add(manager.epics.get(id));
+            } else if (manager.subtasks.containsKey(id)) {
+                manager.history.add(manager.subtasks.get(id));
+            }
+        }
+
         manager.generateNewId(manager.lastIdFromFile);
         return manager;
     }
@@ -143,7 +147,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-    static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
         for (String taskId : value.split(",")) {
             history.add(Integer.parseInt(taskId));
@@ -151,7 +155,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return history;
     }
 
-    static String historyToString(HistoryManager manager) {
+    private static String historyToString(HistoryManager manager) {
         Iterator historyIterator = manager.getViewHistory().iterator();
         String history = "";
         for (Task task : manager.getViewHistory()) {

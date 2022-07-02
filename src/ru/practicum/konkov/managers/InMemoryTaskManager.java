@@ -1,5 +1,6 @@
 package ru.practicum.konkov.managers;
 
+import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.task.*;
 
 import java.util.ArrayList;
@@ -31,12 +32,17 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubtask(Subtask subtask) {
-        subtask.setId(id);
-        subtasks.put(id, subtask);
-        int epicId = subtask.getEpicId();
-        epics.get(epicId).getSubtasks().add(subtask);
-        epics.get(epicId).setStatus(calculateEpicStatus(epicId));
-        generateNewId();
+       try {
+           subtask.setId(id);
+
+           subtasks.put(id, subtask);
+           int epicId = subtask.getEpicId();
+           epics.get(epicId).getSubtasks().add(subtask);
+           epics.get(epicId).setStatus(calculateEpicStatus(epicId));
+           generateNewId();
+       }catch (NullPointerException e){
+           throw new WrongIdException("Wrong Id");
+       }
     }
 
     @Override
