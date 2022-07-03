@@ -39,6 +39,7 @@ public class Main {
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
+        manager.deleteSubtask(5);
     }
 
 }

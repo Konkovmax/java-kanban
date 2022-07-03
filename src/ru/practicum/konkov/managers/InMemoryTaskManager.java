@@ -1,5 +1,6 @@
 package ru.practicum.konkov.managers;
 
+import ru.practicum.konkov.exceptions.EmptyListException;
 import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.task.*;
 
@@ -52,7 +53,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateEpic(Epic epic) {
-        epics.put(epic.getId(), epic);
+
+            epics.put(epic.getId(), epic);
+
     }
 
     @Override
@@ -81,8 +84,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubtask(int id) {
         int epicId = subtasks.get(id).getEpicId();
+        epics.get(epicId).getSubtasks().remove(subtasks.get(id));
         subtasks.remove(id);
-        epics.get(epicId).getSubtasks().remove(id);
         epics.get(epicId).setStatus(calculateEpicStatus(epicId));
         history.remove(id);
 
@@ -97,33 +100,44 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getSubtaskById(int id) {
-        Task targetTask = null;
+        try {
+            Task targetTask = null;
         if (subtasks.containsKey(id)) {
             targetTask = subtasks.get(id);
         }
 
         history.add(targetTask);
         return targetTask;
+    } catch (NullPointerException e){
+        throw new EmptyListException("List is empty");
+    }
     }
 
     @Override
     public Task getTaskById(int id) {
-        Task targetTask = null;
+       try{ Task targetTask = null;
         if (tasks.containsKey(id)) {
             targetTask = tasks.get(id);
         }
         history.add(targetTask);
         return targetTask;
+    }catch (NullPointerException e){
+        throw new EmptyListException("List is empty");
     }
+}
 
     @Override
     public Task getEpicById(int id) {
-        Task targetTask = null;
+        try{
+            Task targetTask = null;
         if (epics.containsKey(id)) {
             targetTask = epics.get(id);
         }
         history.add(targetTask);
         return targetTask;
+    } catch (NullPointerException e){
+        throw new EmptyListException("List is empty");
+    }
     }
 
 
@@ -195,7 +209,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return history.getViewHistory();
+        try{
+            return history.getViewHistory();
+    } catch (IndexOutOfBoundsException e){
+        throw new EmptyListException("List is empty");
+    }
     }
 
     private void generateNewId() {
