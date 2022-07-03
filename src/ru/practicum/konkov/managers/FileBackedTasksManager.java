@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
     static String fileName = "backedtasks.csv";
-    static File file;
+    static public File file;
     int lastIdFromFile = 0;
 
     public FileBackedTasksManager(String fileName) {

@@ -7,4 +7,4 @@ id,type,name,status,description,epic
 5,SUBTASK,Line between methods,DONE,,3
 6,SUBTASK,visibility of variables,NEW,,3
 
-5,2,0,1
+1,0,2,5
