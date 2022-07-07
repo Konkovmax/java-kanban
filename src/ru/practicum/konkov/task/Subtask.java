@@ -1,6 +1,10 @@
 package ru.practicum.konkov.task;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Objects;
+
+import static ru.practicum.konkov.managers.InMemoryTaskManager.zone;
 
 public class Subtask extends Task {
     private int epicId;
@@ -13,6 +17,11 @@ public class Subtask extends Task {
     public Subtask(String[] lineContents) {
         super(lineContents);
         this.epicId = Integer.parseInt(lineContents[5]);
+    }
+
+    public Subtask(String name, String description, Status status, int epicId, String startTime, int duration) {
+        super(name, description, status, startTime, duration);
+        this.epicId = epicId;
     }
 
     public int getEpicId() {

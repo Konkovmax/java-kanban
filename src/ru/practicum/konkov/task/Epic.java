@@ -1,9 +1,14 @@
 package ru.practicum.konkov.task;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
+
+import static ru.practicum.konkov.managers.InMemoryTaskManager.zone;
 
 public class Epic extends Task {
 
+    protected ZonedDateTime endTime;
     private List<Subtask> subtasks = new ArrayList<>();
 
     public Epic(String name, String description, Status status) {
@@ -14,8 +19,37 @@ public class Epic extends Task {
         super(name, description, Status.NEW);
     }
 
+    public Epic(String name, String description, String startTime, int duration) {
+        super(name, description, Status.NEW, startTime, duration);
+        this.endTime = ZonedDateTime.of(LocalDateTime.parse(startTime, DATE_TIME_FORMATTER), zone).plusMinutes(duration);
+
+    }
+
+    public Epic(String name, String description, Status status, String startTime, int duration) {
+        super(name, description, status, startTime, duration);
+        this.endTime = ZonedDateTime.of(LocalDateTime.parse(startTime, DATE_TIME_FORMATTER), zone).plusMinutes(duration);
+    }
+
     public Epic(String[] lineContents) {
         super(lineContents);
+    }
+
+    @Override
+    public ZonedDateTime getEndTime(){
+return endTime;
+    }
+
+    public void calculateDuration(){
+        duration = 0;
+        for (Subtask subtask:subtasks){
+            if(endTime==null||endTime.isBefore(subtask.getEndTime())) {
+                endTime = subtask.getEndTime();
+            }
+            if (startTime==null||subtask.getStartTime().isBefore(startTime)){
+                startTime = subtask.getStartTime();
+            }
+            duration += subtask.getDuration();
+        }
     }
 
     @Override

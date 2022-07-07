@@ -4,10 +4,8 @@ import ru.practicum.konkov.exceptions.EmptyListException;
 import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.task.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -16,11 +14,30 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Subtask> subtasks = new HashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
     private int id = 0;
+    static public ZoneId zone = ZoneId.of("Europe/Moscow");
+
+    Comparator<Task> comparator = new Comparator<Task>() {
+        @Override
+        public int compare(Task t1, Task t2) {
+            if (t1.getStartTime() != null && t2.getStartTime() != null) {
+                return t1.getStartTime().compareTo(t2.getStartTime());
+            } else if (t1.getStartTime() == null && t2.getStartTime() == null) {
+                return t1.getId() - t2.getId();
+            } else if (t1.getStartTime() != null && t2.getStartTime() == null) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    };
+
+    public TreeSet<Task> sortedTasks = new TreeSet<>(comparator);
 
     @Override
     public void addTask(Task task) {
         task.setId(id);
         tasks.put(id, task);
+        sortedTasks.add(task);
         generateNewId();
     }
 
@@ -28,41 +45,49 @@ public class InMemoryTaskManager implements TaskManager {
     public void addEpic(Epic epic) {
         epic.setId(id);
         epics.put(id, epic);
-        generateNewId();
+               generateNewId();
     }
+
 
     @Override
     public void addSubtask(Subtask subtask) {
-       try {
-           subtask.setId(id);
+        try {
+            subtask.setId(id);
 
-           subtasks.put(id, subtask);
-           int epicId = subtask.getEpicId();
-           epics.get(epicId).getSubtasks().add(subtask);
-           epics.get(epicId).setStatus(calculateEpicStatus(epicId));
-           generateNewId();
-       }catch (NullPointerException e){
-           throw new WrongIdException("Wrong Id");
-       }
+            subtasks.put(id, subtask);
+            int epicId = subtask.getEpicId();
+            epics.get(epicId).getSubtasks().add(subtask);
+            epics.get(epicId).setStatus(calculateEpicStatus(epicId));
+            epics.get(epicId).calculateDuration();
+            sortedTasks.add(subtask);
+            generateNewId();
+        } catch (NullPointerException e) {
+            throw new WrongIdException("Wrong Id");
+        }
     }
 
     @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
+        sortedTasks.add(task);
     }
 
     @Override
     public void updateEpic(Epic epic) {
 
-            epics.put(epic.getId(), epic);
+        epics.put(epic.getId(), epic);
+        sortedTasks.add(epic);
 
     }
 
     @Override
     public void updateSubtask(Subtask subtask) {
+        int epicId = subtasks.get(id).getEpicId();
         subtasks.put(subtask.getId(), subtask);
         epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
         epics.get(subtask.getEpicId()).setStatus(calculateEpicStatus(subtask.getEpicId()));
+        sortedTasks.add(subtask);
+        epics.get(epicId).calculateDuration();
     }
 
     @Override
@@ -87,6 +112,7 @@ public class InMemoryTaskManager implements TaskManager {
         epics.get(epicId).getSubtasks().remove(subtasks.get(id));
         subtasks.remove(id);
         epics.get(epicId).setStatus(calculateEpicStatus(epicId));
+        epics.get(epicId).calculateDuration();
         history.remove(id);
 
     }
@@ -102,42 +128,43 @@ public class InMemoryTaskManager implements TaskManager {
     public Task getSubtaskById(int id) {
         try {
             Task targetTask = null;
-        if (subtasks.containsKey(id)) {
-            targetTask = subtasks.get(id);
-        }
+            if (subtasks.containsKey(id)) {
+                targetTask = subtasks.get(id);
+            }
 
-        history.add(targetTask);
-        return targetTask;
-    } catch (NullPointerException e){
-        throw new EmptyListException("List is empty");
-    }
+            history.add(targetTask);
+            return targetTask;
+        } catch (NullPointerException e) {
+            throw new EmptyListException("List is empty");
+        }
     }
 
     @Override
     public Task getTaskById(int id) {
-       try{ Task targetTask = null;
-        if (tasks.containsKey(id)) {
-            targetTask = tasks.get(id);
+        try {
+            Task targetTask = null;
+            if (tasks.containsKey(id)) {
+                targetTask = tasks.get(id);
+            }
+            history.add(targetTask);
+            return targetTask;
+        } catch (NullPointerException e) {
+            throw new EmptyListException("List is empty");
         }
-        history.add(targetTask);
-        return targetTask;
-    }catch (NullPointerException e){
-        throw new EmptyListException("List is empty");
     }
-}
 
     @Override
     public Task getEpicById(int id) {
-        try{
+        try {
             Task targetTask = null;
-        if (epics.containsKey(id)) {
-            targetTask = epics.get(id);
+            if (epics.containsKey(id)) {
+                targetTask = epics.get(id);
+            }
+            history.add(targetTask);
+            return targetTask;
+        } catch (NullPointerException e) {
+            throw new EmptyListException("List is empty");
         }
-        history.add(targetTask);
-        return targetTask;
-    } catch (NullPointerException e){
-        throw new EmptyListException("List is empty");
-    }
     }
 
 
@@ -175,6 +202,20 @@ public class InMemoryTaskManager implements TaskManager {
             history.add(subtask);
         }
     }
+@Override
+    public void printSortedTasks() {
+        for (Task task : sortedTasks) {
+            System.out.println("Task: " + task);
+
+        }
+    }
+
+    public void checkTimeCrossing(Task newTask){
+        for (Task task:sortedTasks){
+            if()
+        }
+
+    }
 
     private Status calculateEpicStatus(int epicId) {
         int statusSum = 0;
@@ -209,11 +250,15 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        try{
+        try {
             return history.getViewHistory();
-    } catch (IndexOutOfBoundsException e){
-        throw new EmptyListException("List is empty");
+        } catch (IndexOutOfBoundsException e) {
+            throw new EmptyListException("List is empty");
+        }
     }
+
+    public TreeSet<Task> getPrioritizedTasks(){
+        return sortedTasks;
     }
 
     private void generateNewId() {

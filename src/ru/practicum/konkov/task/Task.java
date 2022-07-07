@@ -1,17 +1,33 @@
 package ru.practicum.konkov.task;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+// решил, что логично если зоной будет управлять Таск менеджер
+import static ru.practicum.konkov.managers.InMemoryTaskManager.zone;
 
 public class Task {
     protected int id;
     protected String name;
     protected String description;
     protected Status status;
+    protected int duration;
+    protected ZonedDateTime startTime;
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm");
 
     public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
+    }
+
+    public Task(String name, String description, Status status, String startTime, int duration) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = ZonedDateTime.of(LocalDateTime.parse(startTime, DATE_TIME_FORMATTER), zone);
+        this.duration = duration;
     }
 
     public Task(String[] lineContents) {
@@ -22,13 +38,21 @@ public class Task {
 
     }
 
+    public ZonedDateTime getEndTime(){
+        return startTime.plusMinutes(duration);
+    }
+
     @Override
     public String toString() {
         return " {name='" + name + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + status +
+                ", status=" + status +'\'' +
+                ", startTime=" + ((startTime== null) ? "" : startTime.format(DATE_TIME_FORMATTER)) +'\'' +
+                ", duration=" + duration +
+
                 '}';
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -80,5 +104,21 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public int getDuration() {
+        return duration;
+    }
+
+    public ZonedDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(ZonedDateTime startTime) {
+        this.startTime = startTime;
     }
 }
