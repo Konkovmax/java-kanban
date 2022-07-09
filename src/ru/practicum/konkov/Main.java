@@ -29,7 +29,7 @@ public class Main {
 
     public static void fillData(TaskManager manager) {
         Task task1 = new Task("1study java", "to write quality code", Status.IN_PROGRESS,"01.07.22 10:00",60);
-        Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW,"01.06.22 10:00",60);
+        Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW,"01.07.22 10:00",60);
         manager.addTask(task1);
         manager.addTask(task2);
         Epic epic1 = new Epic("preparation to sprint", "for execution project");
@@ -42,7 +42,9 @@ public class Main {
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
-        //manager.deleteSubtask(5);
+        task2 = new Task("0study encapsulation", "without time", Status.NEW);
+        manager.addTask(task2);
+
     }
 
 }

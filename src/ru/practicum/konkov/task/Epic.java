@@ -31,7 +31,10 @@ public class Epic extends Task {
     }
 
     public Epic(String[] lineContents) {
-        super(lineContents);
+        this.name = lineContents[2];
+        this.description = lineContents[4];
+        this.status = Status.valueOf(lineContents[3]);
+        this.id = Integer.parseInt(lineContents[0]);
     }
 
     @Override
@@ -42,7 +45,8 @@ return endTime;
     public void calculateDuration(){
         duration = 0;
         for (Subtask subtask:subtasks){
-            if(endTime==null||endTime.isBefore(subtask.getEndTime())) {
+            if((endTime==null||endTime.isBefore(subtask.getEndTime()))&&
+                    subtask.getStartTime()!=null){
                 endTime = subtask.getEndTime();
             }
             if (startTime==null||subtask.getStartTime().isBefore(startTime)){

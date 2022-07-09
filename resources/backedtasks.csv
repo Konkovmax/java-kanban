@@ -1,10 +1,10 @@
-id,type,name,status,description,epic
-0,TASK,study java,IN_PROGRESS,to write quality code,
-1,TASK,study encapsulation,NEW,to write very well code,
+id,type,name,status,description,startTime,duration,epic
+0,TASK,1study java,IN_PROGRESS,to write quality code,01.07.22 10:00,60
+1,TASK,2study encapsulation,NEW,to write very well code,01.07.22 11:15,60
+7,TASK,0study encapsulation,NEW,without time,,0
 2,EPIC,preparation to sprint,NEW,for execution project,
 3,EPIC,checklist for sprint,IN_PROGRESS,to minimize mistakes,
-4,SUBTASK,Initialisation in constructor,NEW,,3
-5,SUBTASK,Line between methods,DONE,,3
-6,SUBTASK,visibility of variables,NEW,,3
+0,SUBTASK,3Initialisation in constructor,NEW,,21.05.22 10:00,60,3
+1,SUBTASK,4Line between methods,IN_PROGRESS,,01.05.22 10:00,60,3
+2,SUBTASK,5visibility of variables,NEW,,11.05.22 10:00,60,3
 
-1,0,2,5

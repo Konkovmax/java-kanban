@@ -26,7 +26,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         fillData(fileTasksManager);
         fileTasksManager.getTaskById(1);
         fileTasksManager.getTaskById(0);
-        fileTasksManager.getEpicById(2);
+        fileTasksManager.getEpicById(3);
         fileTasksManager.getSubtaskById(5);
         printFile(file);//в ТЗ про это не сказано, но добавил для наглядности, что файл такой как надо
 
@@ -40,24 +40,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public static void fillData(FileBackedTasksManager manager) {
-        Task task1 = new Task("study java", "to write quality code", Status.IN_PROGRESS);
-        Task task2 = new Task("study encapsulation", "to write very well code", Status.NEW);
+        Task task1 = new Task("1study java", "to write quality code", Status.IN_PROGRESS, "01.07.22 10:00", 60);
+        Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW, "01.07.22 10:00", 60);
         manager.addTask(task1);
         manager.addTask(task2);
         Epic epic1 = new Epic("preparation to sprint", "for execution project");
         Epic epic2 = new Epic("checklist for sprint", "to minimize mistakes");
         manager.addEpic(epic1);
         manager.addEpic(epic2);
-        Subtask subtask1 = new Subtask("Initialisation in constructor", "", Status.NEW, 3);
-        Subtask subtask2 = new Subtask("Line between methods", "", Status.DONE, 3);
-        Subtask subtask3 = new Subtask("visibility of variables", "", Status.NEW, 3);
+        Subtask subtask1 = new Subtask("3Initialisation in constructor", "", Status.NEW, 3, "21.05.22 10:00", 60);
+        Subtask subtask2 = new Subtask("4Line between methods", "", Status.IN_PROGRESS, 3, "01.05.22 10:00", 60);
+        Subtask subtask3 = new Subtask("5visibility of variables", "", Status.NEW, 3, "11.05.22 10:00", 60);
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
+        task2 = new Task("0study encapsulation", "without time", Status.NEW);
+        manager.addTask(task2);
     }
 
     public void save() {
-        String header = "id,type,name,status,description,epic";
+        String header = "id,type,name,status,description,startTime,duration,epic";
         try (FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8)) {
             fileWriter.write(header + "\n");
             for (Task task : tasks.values()) {
@@ -120,23 +122,23 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     }
                     case "SUBTASK": {
                         Subtask subtask = new Subtask(lineContents);
-                        manager.subtasks.put(subtask.getId(), subtask);
+                        manager.addSubtask(subtask);
                         manager.updateLastId(subtask.getId());
                     }
                 }
             }
         }
-
-        for (int id : historyFromString(lines[historyLine])) {
-            if (manager.tasks.containsKey(id)) {
-                manager.history.add(manager.tasks.get(id));
-            } else if (manager.epics.containsKey(id)) {
-                manager.history.add(manager.epics.get(id));
-            } else if (manager.subtasks.containsKey(id)) {
-                manager.history.add(manager.subtasks.get(id));
+        if (historyLine != 0) {
+            for (int id : historyFromString(lines[historyLine])) {
+                if (manager.tasks.containsKey(id)) {
+                    manager.history.add(manager.tasks.get(id));
+                } else if (manager.epics.containsKey(id)) {
+                    manager.history.add(manager.epics.get(id));
+                } else if (manager.subtasks.containsKey(id)) {
+                    manager.history.add(manager.subtasks.get(id));
+                }
             }
         }
-
         manager.generateNewId(manager.lastIdFromFile);
         return manager;
     }
@@ -149,8 +151,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
-        for (String taskId : value.split(",")) {
-            history.add(Integer.parseInt(taskId));
+        if (value.equals("")) {
+            for (String taskId : value.split(",")) {
+                history.add(Integer.parseInt(taskId));
+            }
         }
         return history;
     }

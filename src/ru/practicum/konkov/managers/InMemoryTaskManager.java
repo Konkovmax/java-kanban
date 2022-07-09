@@ -24,9 +24,9 @@ public class InMemoryTaskManager implements TaskManager {
             } else if (t1.getStartTime() == null && t2.getStartTime() == null) {
                 return t1.getId() - t2.getId();
             } else if (t1.getStartTime() != null && t2.getStartTime() == null) {
-                return 1;
-            } else {
                 return -1;
+            } else {
+                return 1;
             }
         }
     };
@@ -37,6 +37,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void addTask(Task task) {
         task.setId(id);
         tasks.put(id, task);
+        checkTimeCrossing(task);
         sortedTasks.add(task);
         generateNewId();
     }
@@ -56,6 +57,7 @@ public class InMemoryTaskManager implements TaskManager {
 
             subtasks.put(id, subtask);
             int epicId = subtask.getEpicId();
+            checkTimeCrossing(subtask);
             epics.get(epicId).getSubtasks().add(subtask);
             epics.get(epicId).setStatus(calculateEpicStatus(epicId));
             epics.get(epicId).calculateDuration();
@@ -69,6 +71,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateTask(Task task) {
         tasks.put(task.getId(), task);
+        checkTimeCrossing(task);
         sortedTasks.add(task);
     }
 
@@ -83,6 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         int epicId = subtasks.get(id).getEpicId();
+        checkTimeCrossing(subtask);
         subtasks.put(subtask.getId(), subtask);
         epics.get(subtask.getEpicId()).getSubtasks().add(subtask);
         epics.get(subtask.getEpicId()).setStatus(calculateEpicStatus(subtask.getEpicId()));
@@ -209,12 +213,21 @@ public class InMemoryTaskManager implements TaskManager {
 
         }
     }
-
+//я не делал консольный ввод, поэтому в случае пересечения задач по времени, сообщений не выводится,
+// просто время новой задачи сдвигается после окончания уже имеющейся +15 минут
     public void checkTimeCrossing(Task newTask){
-        for (Task task:sortedTasks){
-            if()
+        if(!sortedTasks.isEmpty()&&newTask.getStartTime()!=null) {
+            for (Task task : sortedTasks) {
+                if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime()))||
+                        newTask.getStartTime().isEqual(task.getStartTime())){
+                    newTask.setStartTime(task.getEndTime().plusMinutes(15));
+                    break;
+                }
+                if (newTask.getEndTime().isAfter(task.getStartTime()) && newTask.getEndTime().isBefore(task.getEndTime())){
+                    newTask.setStartTime(task.getEndTime().plusMinutes(15));
+                }
+            }
         }
-
     }
 
     private Status calculateEpicStatus(int epicId) {

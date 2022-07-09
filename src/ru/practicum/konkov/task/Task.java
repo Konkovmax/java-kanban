@@ -35,7 +35,13 @@ public class Task {
         this.description = lineContents[4];
         this.status = Status.valueOf(lineContents[3]);
         this.id = Integer.parseInt(lineContents[0]);
+        if(!lineContents[5].isEmpty()){
+        this.startTime = ZonedDateTime.of(LocalDateTime.parse(lineContents[5], DATE_TIME_FORMATTER), zone);
+        this.duration = Integer.parseInt(lineContents[6]);}
 
+    }
+
+    public Task() {
     }
 
     public ZonedDateTime getEndTime(){
@@ -71,7 +77,8 @@ public class Task {
 
     public String toFileString() {
         return id + "," + "TASK" + "," + name + ","
-                + status.toString() + "," + description + ",";
+                + status.toString() + "," + description + "," + ((startTime== null) ? "" : startTime.format(DATE_TIME_FORMATTER)) + ","
+                 + duration;
     }
 
     public int getId() {
