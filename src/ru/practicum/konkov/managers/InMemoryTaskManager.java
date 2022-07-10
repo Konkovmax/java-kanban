@@ -4,7 +4,10 @@ import ru.practicum.konkov.exceptions.EmptyListException;
 import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.task.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -13,8 +16,10 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Epic> epics = new HashMap<>();
     protected Map<Integer, Subtask> subtasks = new HashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
+    protected Map<Integer, Boolean> busyIntervals = new HashMap<>();
     private int id = 0;
     static public ZoneId zone = ZoneId.of("Europe/Moscow");
+    static public final ZonedDateTime START_DAY_OF_TASK_LIST = ZonedDateTime.of(LocalDateTime.of(2022, 5, 1, 0, 0), zone);
 
     Comparator<Task> comparator = new Comparator<Task>() {
         @Override
@@ -33,6 +38,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     public TreeSet<Task> sortedTasks = new TreeSet<>(comparator);
 
+    // количество 15 минутных интервалов в году - отсюда https://currentmillis.com/?31536000861
+    public void fillBusyIntervals() {
+        for (int i = 0; i < 35040; i++) {
+            busyIntervals.put(i, false);
+        }
+    }
+
     @Override
     public void addTask(Task task) {
         task.setId(id);
@@ -46,7 +58,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void addEpic(Epic epic) {
         epic.setId(id);
         epics.put(id, epic);
-               generateNewId();
+        generateNewId();
     }
 
 
@@ -171,7 +183,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-
     @Override
     public void printTasks() {
         for (Task task : tasks.values()) {
@@ -206,29 +217,51 @@ public class InMemoryTaskManager implements TaskManager {
             history.add(subtask);
         }
     }
-@Override
+
+    @Override
     public void printSortedTasks() {
         for (Task task : sortedTasks) {
             System.out.println("Task: " + task);
 
         }
     }
-//я не делал консольный ввод, поэтому в случае пересечения задач по времени, сообщений не выводится,
+
+    //я не делал консольный ввод, поэтому в случае пересечения задач по времени, сообщений не выводится,
 // просто время новой задачи сдвигается после окончания уже имеющейся +15 минут
-    public void checkTimeCrossing(Task newTask){
-        if(!sortedTasks.isEmpty()&&newTask.getStartTime()!=null) {
+    // Т.к. в доп задании пересечение надо искать вторым способом, то я первый сохранил, потому что неизвестно
+    //какой из них будет нужнее потом
+    public void checkTimeCrossingBasic(Task newTask) {
+        if (!sortedTasks.isEmpty() && newTask.getStartTime() != null) {
             for (Task task : sortedTasks) {
-                if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime()))||
-                        newTask.getStartTime().isEqual(task.getStartTime())){
+                if ((newTask.getStartTime().isAfter(task.getStartTime()) && newTask.getStartTime().isBefore(task.getEndTime())) ||
+                        newTask.getStartTime().isEqual(task.getStartTime())) {
                     newTask.setStartTime(task.getEndTime().plusMinutes(15));
                     break;
                 }
-                if (newTask.getEndTime().isAfter(task.getStartTime()) && newTask.getEndTime().isBefore(task.getEndTime())){
+                if (newTask.getEndTime().isAfter(task.getStartTime()) && newTask.getEndTime().isBefore(task.getEndTime())) {
                     newTask.setStartTime(task.getEndTime().plusMinutes(15));
                 }
             }
         }
     }
+
+    // то что я нашел в интернете говорит мне, что сложность containsKey тоже 0(1) поэтому вопрос
+    // зачем заранее заполнять таблицу пустыми значениями? я как бы сделал по ТЗ, но сомнения остались...
+    public void checkTimeCrossing(Task newTask) {
+        if (newTask.getStartTime() != null) {
+            boolean timeCrossingEliminated = true;
+            while (timeCrossingEliminated) {
+                int interval = (int) Duration.between(START_DAY_OF_TASK_LIST, newTask.getStartTime()).toMinutes() / 15;
+                if (busyIntervals.get(interval)) {
+                    newTask.setStartTime(newTask.getEndTime().plusMinutes(15));
+                } else {
+                    timeCrossingEliminated = false;
+                    busyIntervals.put(interval, true);
+                }
+            }
+        }
+    }
+
 
     private Status calculateEpicStatus(int epicId) {
         int statusSum = 0;
@@ -270,7 +303,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public TreeSet<Task> getPrioritizedTasks(){
+    public TreeSet<Task> getPrioritizedTasks() {
         return sortedTasks;
     }
 
@@ -281,6 +314,5 @@ public class InMemoryTaskManager implements TaskManager {
     public void generateNewId(int id) {
         this.id = id + 1;
     }
-
 
 }

@@ -25,6 +25,7 @@ class InMemoryHistoryManagerTest {
     Task task = new Task("study java", "to write quality code", Status.IN_PROGRESS);
 
     public static void fillData(TaskManager manager) {
+        manager.fillBusyIntervals();
         Task task1 = new Task("study java", "to write quality code", Status.IN_PROGRESS);
         Task task2 = new Task("study encapsulation", "to write very well code", Status.NEW);
         manager.addTask(task1);
@@ -47,11 +48,11 @@ class InMemoryHistoryManagerTest {
         manager.getSubtaskById(5);
         manager.getSubtaskById(6);
     }
-//проверка работы истории с дубликатами в тесте на добавление дубликата
+
+    //проверка работы истории с дубликатами в тесте на добавление дубликата
     @Test
     void getViewHistoryStandard() {
-fillData(taskManager);
-       //historyManager.add(task);
+        fillData(taskManager);
         final List<Task> history = taskManager.getHistory();
         assertNotNull(history, "История не пустая.");
         assertEquals(7, history.size(), "История не пустая.");
@@ -77,9 +78,9 @@ fillData(taskManager);
         fillData(taskManager);
 
         taskManager.getTaskById(1);
-                final List<Task> history = taskManager.getHistory();
+        final List<Task> history = taskManager.getHistory();
 
-                assertNotNull(history, "История не пустая.");
+        assertNotNull(history, "История не пустая.");
         assertEquals(7, history.size(), "История не пустая.");
     }
 
@@ -91,6 +92,7 @@ fillData(taskManager);
         assertNotNull(history, "История не пустая.");
         assertEquals(6, history.size(), "История не пустая.");
     }
+
     @Test
     void removeFromMiddle() {
         fillData(taskManager);
@@ -99,6 +101,7 @@ fillData(taskManager);
         assertNotNull(history, "История не пустая.");
         assertEquals(3, history.size(), "История не пустая.");
     }
+
     @Test
     void removeFromEnd() {
         fillData(taskManager);
@@ -107,6 +110,7 @@ fillData(taskManager);
         assertNotNull(history, "История не пустая.");
         assertEquals(6, history.size(), "История не пустая.");
     }
+
     @Test
     void removeFromEmpty() {
         historyManager.remove(1);
@@ -114,6 +118,7 @@ fillData(taskManager);
         assertNotNull(history, "История не пустая.");
         assertEquals(0, history.size(), "История не пустая.");
     }
+
     @Test
     void removeWithDouble() {
         fillData(taskManager);

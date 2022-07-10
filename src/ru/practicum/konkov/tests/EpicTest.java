@@ -14,7 +14,7 @@ class EpicTest {
     TaskManager manager = Managers.getDefault();
     Epic epic = new Epic("epic for tests", "comprehensive testing");
 
-    public void createSubtasks(Status subtask1Status, Status subtask2Status, Status subtask3Status){
+    public void createSubtasks(Status subtask1Status, Status subtask2Status, Status subtask3Status) {
         manager.addEpic(epic);
         int epicId = epic.getId();
         Subtask subtask1 = new Subtask("subtask #1", "", subtask1Status, epicId);
@@ -27,34 +27,33 @@ class EpicTest {
     }
 
     @Test
-    public void shouldStatusBeNewWithoutSubtasks(){
+    public void shouldStatusBeNewWithoutSubtasks() {
         assertEquals(Status.NEW, epic.getStatus());
     }
 
     @Test
-    public void shouldStatusBeNewWithSubtasksAllNew(){
+    public void shouldStatusBeNewWithSubtasksAllNew() {
         createSubtasks(Status.NEW, Status.NEW, Status.NEW);
         assertEquals(Status.NEW, epic.getStatus());
     }
 
     @Test
-    public void shouldStatusBeDoneWithSubtasksAllDone(){
+    public void shouldStatusBeDoneWithSubtasksAllDone() {
         createSubtasks(Status.DONE, Status.DONE, Status.DONE);
         assertEquals(Status.DONE, epic.getStatus());
     }
 
     @Test
-    public void shouldStatusBeInProgressWithSubtasksNewAndDone(){
+    public void shouldStatusBeInProgressWithSubtasksNewAndDone() {
         createSubtasks(Status.DONE, Status.NEW, Status.DONE);
         assertEquals(Status.IN_PROGRESS, epic.getStatus());
     }
 
     @Test
-    public void shouldStatusBeInProgressWithSubtasksInProgress(){
+    public void shouldStatusBeInProgressWithSubtasksInProgress() {
         createSubtasks(Status.IN_PROGRESS, Status.IN_PROGRESS, Status.IN_PROGRESS);
         assertEquals(Status.IN_PROGRESS, epic.getStatus());
     }
-
 
 
 }

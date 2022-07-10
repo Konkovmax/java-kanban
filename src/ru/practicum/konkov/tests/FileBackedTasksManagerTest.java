@@ -37,8 +37,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         Epic epic1 = new Epic("checklist for sprint", "to minimize mistakes");
         fileTasksManager.addEpic(epic1);
         String fileContents = null;
-        // System.setOut(new PrintStream(output));
-        //  FileBackedTasksManager.printFile(fileTasksManager.file);
         try {
             fileContents = Files.readString(fileTasksManager.file.toPath());
         } catch (IOException e) {
@@ -61,7 +59,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         assertNotNull(history, "История не пустая.");
         assertEquals(3, history.size(), "История не пустая.");
         //т.к. нет готового метода, который возвращает список задач, то использую просто проверочную задачу
-        Task expectedTask = new Task("2study encapsulation", "to write very well code", Status.NEW,"01.07.22 11:15",60);
+        Task expectedTask = new Task("2study encapsulation", "to write very well code", Status.NEW, "01.07.22 11:15", 60);
         final Task task = manager.getTaskById(1);
         expectedTask.setId(1);
         assertEquals(expectedTask, task);
@@ -94,6 +92,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest {
         FileBackedTasksManager manager = fileTasksManager.loadFromFile(fileTasksManager.file);
         final List<Task> history = manager.getHistory();
         assertTrue(history.isEmpty());
-        }
+    }
 
 }

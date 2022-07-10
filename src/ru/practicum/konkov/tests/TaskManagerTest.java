@@ -27,17 +27,18 @@ abstract class TaskManagerTest<T extends TaskManager> {
     }
 
     public static void fillData(TaskManager manager) {
-        Task task1 = new Task("1study java", "to write quality code", Status.IN_PROGRESS,"01.07.22 10:00",60);
-        Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW,"01.07.22 10:00",60);
+        manager.fillBusyIntervals();
+        Task task1 = new Task("1study java", "to write quality code", Status.IN_PROGRESS, "01.07.22 10:00", 60);
+        Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW, "01.07.22 10:00", 60);
         manager.addTask(task1);
         manager.addTask(task2);
         Epic epic1 = new Epic("preparation to sprint", "for execution project");
         Epic epic2 = new Epic("checklist for sprint", "to minimize mistakes");
         manager.addEpic(epic1);
         manager.addEpic(epic2);
-        Subtask subtask1 = new Subtask("3Initialisation in constructor", "", Status.NEW, 3,"21.05.22 10:00",60);
-        Subtask subtask2 = new Subtask("4Line between methods", "", Status.IN_PROGRESS, 3,"01.05.22 10:00",60);
-        Subtask subtask3 = new Subtask("5visibility of variables", "", Status.NEW, 3,"11.05.22 10:00",60);
+        Subtask subtask1 = new Subtask("3Initialisation in constructor", "", Status.NEW, 3, "21.05.22 10:00", 60);
+        Subtask subtask2 = new Subtask("4Line between methods", "", Status.IN_PROGRESS, 3, "01.05.22 10:00", 60);
+        Subtask subtask3 = new Subtask("5visibility of variables", "", Status.NEW, 3, "11.05.22 10:00", 60);
         manager.addSubtask(subtask1);
         manager.addSubtask(subtask2);
         manager.addSubtask(subtask3);
@@ -173,8 +174,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 });
         Assertions.assertEquals("List is empty", ex.getMessage());
     }
-
-    //updateSubtaskWithWrongId() нет смысла, т.к. исключение будет на этапе добавления subtaska
 
     @Test
     void deleteTask() {
@@ -358,7 +357,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
     void printViewHistoryEmpty() {
         System.setOut(new PrintStream(output));
         taskManager.printViewHistory();
-        Assertions.assertEquals(" Viewed tasks from latest to oldest"+ "\r\n", output.toString());
+        Assertions.assertEquals(" Viewed tasks from latest to oldest" + "\r\n", output.toString());
         System.setOut(null);
     }
 
@@ -383,7 +382,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     final int taskId = epic.getId();
                     taskManager.addTask(epic);
 
-       taskManager.getHistory().get(0);
+                    taskManager.getHistory().get(0);
 
                 });
         Assertions.assertEquals("Index 0 out of bounds for length 0", ex.getMessage());

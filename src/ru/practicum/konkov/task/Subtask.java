@@ -30,7 +30,7 @@ public class Subtask extends Task {
 
     public String toFileString() {
         return id + "," + "SUBTASK" + "," + name + ","
-                + status.toString() + "," + description + "," + ((startTime== null) ? "" : startTime.format(DATE_TIME_FORMATTER)) + "," +
+                + status.toString() + "," + description + "," + ((startTime == null) ? "" : startTime.format(DATE_TIME_FORMATTER)) + "," +
                 duration + "," + epicId;
     }
 

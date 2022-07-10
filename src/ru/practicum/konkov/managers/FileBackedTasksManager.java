@@ -40,6 +40,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public static void fillData(FileBackedTasksManager manager) {
+        manager.fillBusyIntervals();
         Task task1 = new Task("1study java", "to write quality code", Status.IN_PROGRESS, "01.07.22 10:00", 60);
         Task task2 = new Task("2study encapsulation", "to write very well code", Status.NEW, "01.07.22 10:00", 60);
         manager.addTask(task1);
@@ -92,6 +93,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     static public FileBackedTasksManager loadFromFile(File file) {
         String fileContents = null;
         FileBackedTasksManager manager = new FileBackedTasksManager(fileName);
+        manager.fillBusyIntervals();
         try {
             fileContents = Files.readString(file.toPath());
         } catch (IOException e) {
@@ -151,7 +153,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     private static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
-        if (value.equals("")) {
+        if (!value.isEmpty()) {
             for (String taskId : value.split(",")) {
                 history.add(Integer.parseInt(taskId));
             }

@@ -38,18 +38,18 @@ public class Epic extends Task {
     }
 
     @Override
-    public ZonedDateTime getEndTime(){
-return endTime;
+    public ZonedDateTime getEndTime() {
+        return endTime;
     }
 
-    public void calculateDuration(){
+    public void calculateDuration() {
         duration = 0;
-        for (Subtask subtask:subtasks){
-            if((endTime==null||endTime.isBefore(subtask.getEndTime()))&&
-                    subtask.getStartTime()!=null){
+        for (Subtask subtask : subtasks) {
+            if ((endTime == null || endTime.isBefore(subtask.getEndTime())) &&
+                    subtask.getStartTime() != null) {
                 endTime = subtask.getEndTime();
             }
-            if (startTime==null||subtask.getStartTime().isBefore(startTime)){
+            if (startTime == null || subtask.getStartTime().isBefore(startTime)) {
                 startTime = subtask.getStartTime();
             }
             duration += subtask.getDuration();
