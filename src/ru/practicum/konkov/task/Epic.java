@@ -30,6 +30,7 @@ public class Epic extends Task {
         this.endTime = ZonedDateTime.of(LocalDateTime.parse(startTime, DATE_TIME_FORMATTER), zone).plusMinutes(duration);
     }
 
+
     public Epic(String[] lineContents) {
         this.name = lineContents[2];
         this.description = lineContents[4];

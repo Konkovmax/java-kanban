@@ -3,6 +3,7 @@ package ru.practicum.konkov.tests;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.function.Executable;
 import ru.practicum.konkov.exceptions.EmptyListException;
+import ru.practicum.konkov.exceptions.NotFoundException;
 import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
@@ -84,8 +85,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void addSubtaskWithWrongId() {
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Subtask subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 5);
                     taskManager.addSubtask(subtask);
@@ -94,7 +95,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     assertNotNull(savedTask, "Задача не найдена.");
                     assertEquals(subtask, savedTask, "Задачи не совпадают.");
                 });
-        Assertions.assertEquals("Wrong Id", ex.getMessage());
+        Assertions.assertEquals("No epic found by id", ex.getMessage());
     }
 
     @Test
@@ -133,8 +134,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateEpicToEmptyList() {
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     final int taskId = epic.getId();
@@ -162,8 +163,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateSubtaskToEmptyList() {
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     taskManager.addEpic(epic);
@@ -180,8 +181,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void deleteTask() {
         fillData(taskManager);
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     taskManager.deleteTask(0);
                     taskManager.getTaskById(0);
@@ -192,8 +193,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void deleteEpic() {
         fillData(taskManager);
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     taskManager.deleteEpic(2);
                     taskManager.getEpicById(2);
@@ -204,8 +205,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void deleteSubtask() {
         fillData(taskManager);
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     taskManager.deleteSubtask(5);
                     taskManager.getSubtaskById(5);
@@ -222,8 +223,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void getTaskByWrongId() {
 
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
                     taskManager.addTask(task);
@@ -235,21 +236,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getSubtaskById() {
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Subtask subtask = new Subtask("Test addNewEpic", "Test addNewEpic description", Status.NEW, 1);
                     taskManager.addSubtask(subtask);
                     final int taskId = subtask.getId() + 3;
                     taskManager.getSubtaskById(taskId);
                 });
-        Assertions.assertEquals("Wrong Id", ex.getMessage());
+        Assertions.assertEquals("No epic found by id", ex.getMessage());
     }
 
     @Test
     void getEpicById() {
-        WrongIdException ex = assertThrows(
-                WrongIdException.class,
+        NotFoundException ex = assertThrows(
+                NotFoundException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     taskManager.addEpic(epic);
