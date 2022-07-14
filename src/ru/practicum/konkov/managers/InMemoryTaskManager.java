@@ -12,27 +12,31 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
+    //C магическим числом - это я сплоховал, согласен, видимо рассказ про https://currentmillis.com
+    // создал впечатление, что число стало менее магическим
+    static final private int INTERVALS_NUMBER = 35040;
+    static public ZoneId zone = ZoneId.of("Europe/Moscow");
+    // по инструкции static final должно быть перед static, но в этом случае zone не видит, поэтому я их
+    // в хронологическом порядке переставил
+    static public final ZonedDateTime START_DAY_OF_TASK_LIST = ZonedDateTime.of(LocalDateTime.of(2022, 5, 1, 0, 0), zone);
+
     protected Map<Integer, Task> tasks = new HashMap<>();
     protected Map<Integer, Epic> epics = new HashMap<>();
     protected Map<Integer, Subtask> subtasks = new HashMap<>();
     protected HistoryManager history = Managers.getDefaultHistory();
     protected Map<Integer, Boolean> busyIntervals = new HashMap<>();
-    private int id = 0;
-    static public ZoneId zone = ZoneId.of("Europe/Moscow");
-    static public final ZonedDateTime START_DAY_OF_TASK_LIST = ZonedDateTime.of(LocalDateTime.of(2022, 5, 1, 0, 0), zone);
 
-    Comparator<Task> comparator = new Comparator<Task>() {
-        @Override
-        public int compare(Task t1, Task t2) {
-            if (t1.getStartTime() != null && t2.getStartTime() != null) {
-                return t1.getStartTime().compareTo(t2.getStartTime());
-            } else if (t1.getStartTime() == null && t2.getStartTime() == null) {
-                return t1.getId() - t2.getId();
-            } else if (t1.getStartTime() != null && t2.getStartTime() == null) {
-                return -1;
-            } else {
-                return 1;
-            }
+    private int id = 0;
+
+    protected Comparator<Task> comparator = (t1, t2) -> {
+        if (t1.getStartTime() != null && t2.getStartTime() != null) {
+            return t1.getStartTime().compareTo(t2.getStartTime());
+        } else if (t1.getStartTime() == null && t2.getStartTime() == null) {
+            return t1.getId() - t2.getId();
+        } else if (t1.getStartTime() != null && t2.getStartTime() == null) {
+            return -1;
+        } else {
+            return 1;
         }
     };
 
@@ -40,7 +44,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     // количество 15 минутных интервалов в году - отсюда https://currentmillis.com/?31536000861
     public void fillBusyIntervals() {
-        for (int i = 0; i < 35040; i++) {
+        for (int i = 0; i < INTERVALS_NUMBER; i++) {
             busyIntervals.put(i, false);
         }
     }
@@ -61,12 +65,12 @@ public class InMemoryTaskManager implements TaskManager {
         generateNewId();
     }
 
-
+    //я вижу ситуацию следующим образом, id эпика, к которому относится сабтаск, мы передаём в конструкторе
+// сабтаска, соответственно мы можем передать id несуществующего эпика и тогда будет ошибка неправильный id
     @Override
     public void addSubtask(Subtask subtask) {
         try {
             subtask.setId(id);
-
             subtasks.put(id, subtask);
             int epicId = subtask.getEpicId();
             checkTimeCrossing(subtask);
@@ -140,48 +144,52 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
     }
 
+    //тут мне не в чем тебя поправить... полностью согласен с твоими рассуждениями.
+    // Исправил. Только сделал WrongIdException, а не NotFoundException, чтобы новое исключение не
+    // создавать, т.к. решил это не меняет сути
     @Override
     public Task getSubtaskById(int id) {
-        try {
-            Task targetTask = null;
-            if (subtasks.containsKey(id)) {
-                targetTask = subtasks.get(id);
-            }
-
+        Task targetTask = null;
+        if (subtasks.containsKey(id)) {
+            targetTask = subtasks.get(id);
             history.add(targetTask);
             return targetTask;
-        } catch (NullPointerException e) {
-            throw new EmptyListException("List is empty");
+        } else {
+            throw new WrongIdException("Subtask not found");
         }
     }
 
     @Override
     public Task getTaskById(int id) {
-        try {
-            Task targetTask = null;
-            if (tasks.containsKey(id)) {
-                targetTask = tasks.get(id);
-            }
+        Task targetTask = null;
+        if (tasks.containsKey(id)) {
+            targetTask = tasks.get(id);
             history.add(targetTask);
             return targetTask;
-        } catch (NullPointerException e) {
-            throw new EmptyListException("List is empty");
+        } else {
+            throw new WrongIdException("Task not found");
         }
     }
 
     @Override
     public Task getEpicById(int id) {
-        try {
-            Task targetTask = null;
-            if (epics.containsKey(id)) {
-                targetTask = epics.get(id);
-            }
+        Task targetTask = null;
+        if (epics.containsKey(id)) {
+            targetTask = epics.get(id);
             history.add(targetTask);
             return targetTask;
-        } catch (NullPointerException e) {
-            throw new EmptyListException("List is empty");
+        } else {
+            throw new WrongIdException("Epics not found");
         }
     }
+
+
+    //начал изобретать какую-то конструкцию типа см. ниже для п. 5. но понял, что для разных типов
+    // у меня разные списки и разные сообщения об ошибке. И общего только   history.add(targetTask);
+    // а делать через List bp Map (task, subtask, epic) - решил, что перебор...
+    // но наверноя я просто не понял идею....
+    //    public <T> T getSmthById(int id, T t1){
+//          }
 
     @Override
     public void printTasks() {
@@ -226,6 +234,21 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
+    public Map<Integer, Subtask> getSubtasks() {
+        return subtasks;
+    }
+
+    @Override
+    public Map<Integer, Task> getTasks() {
+        return tasks;
+    }
+
+    @Override
+    public Map<Integer, Epic> getEpics() {
+        return epics;
+    }
+
     //я не делал консольный ввод, поэтому в случае пересечения задач по времени, сообщений не выводится,
 // просто время новой задачи сдвигается после окончания уже имеющейся +15 минут
     // Т.к. в доп задании пересечение надо искать вторым способом, то я первый сохранил, потому что неизвестно
@@ -245,8 +268,12 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // то что я нашел в интернете говорит мне, что сложность containsKey тоже 0(1) поэтому вопрос
-    // зачем заранее заполнять таблицу пустыми значениями? я как бы сделал по ТЗ, но сомнения остались...
+    // Я вижу два варианта:
+    // 1. сначала заполнить всё false, а потом по ключу проверять там true или false
+    // 2. ничего не заполнять, а потом просто проверять есть такой ключ в мапе, если есть
+    // значит интервал занят, если нет, значит помечаем, что этот интервал занят добавляя в мапу этот номер интервала
+    // при этом второй способ выглядит привлекательнее(для меня:) ) но почему-то в ТЗ хотят первый.
+    // Вопрос чем плох второй способ?
     public void checkTimeCrossing(Task newTask) {
         if (newTask.getStartTime() != null) {
             boolean timeCrossingEliminated = true;
@@ -303,7 +330,11 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    // просто это кардинальная трансформация - перестать выводить в консоль результаты трудов своих,
+    // а просто наблюдать их через тесты... Тесты добавил
+    @Override
     public TreeSet<Task> getPrioritizedTasks() {
+
         return sortedTasks;
     }
 

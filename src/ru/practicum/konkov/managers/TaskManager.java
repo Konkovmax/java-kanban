@@ -3,6 +3,8 @@ package ru.practicum.konkov.managers;
 import ru.practicum.konkov.task.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 
 public interface TaskManager {
 
@@ -45,6 +47,14 @@ public interface TaskManager {
     List<Task> getHistory();
 
     void printSortedTasks();
+
+    TreeSet<Task> getPrioritizedTasks();
+
+    Map<Integer, Task> getTasks();
+
+    Map<Integer, Subtask> getSubtasks();
+
+    Map<Integer, Epic> getEpics();
 
     void fillBusyIntervals();
 

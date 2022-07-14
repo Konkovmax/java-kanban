@@ -12,8 +12,10 @@ import ru.practicum.konkov.task.Task;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.practicum.konkov.managers.InMemoryTaskManager.START_DAY_OF_TASK_LIST;
 
 
 abstract class TaskManagerTest<T extends TaskManager> {
@@ -131,8 +133,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateEpicToEmptyList() {
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     final int taskId = epic.getId();
@@ -141,7 +143,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     assertNotNull(savedTask, "Задача не найдена.");
                     assertEquals(epic, savedTask, "Задачи не совпадают.");
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Epics not found", ex.getMessage());
     }
 
     @Test
@@ -160,8 +162,8 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void updateSubtaskToEmptyList() {
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     taskManager.addEpic(epic);
@@ -172,48 +174,46 @@ abstract class TaskManagerTest<T extends TaskManager> {
                     assertNotNull(savedTask, "Задача не найдена.");
                     assertEquals(subtask, savedTask, "Задачи не совпадают.");
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Subtask not found", ex.getMessage());
     }
 
     @Test
     void deleteTask() {
         fillData(taskManager);
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     taskManager.deleteTask(0);
                     taskManager.getTaskById(0);
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Task not found", ex.getMessage());
     }
 
     @Test
     void deleteEpic() {
         fillData(taskManager);
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     taskManager.deleteEpic(2);
                     taskManager.getEpicById(2);
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Epics not found", ex.getMessage());
     }
 
     @Test
     void deleteSubtask() {
         fillData(taskManager);
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     taskManager.deleteSubtask(5);
                     taskManager.getSubtaskById(5);
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Subtask not found", ex.getMessage());
     }
 
-    // для проверки отсутствия задач, нужен либо метод для доступа к спискам, либо изменить права доступа к спискам
-    // но мне показалось странно менять систему ради тестов. По идее это тесты для программы, а не наоборот?
-// или надо дописать?
+    // по п.10 да всё верно, просто подумал, может, этого недостаточно.
     @Test
     void removeAll() {
     }
@@ -222,15 +222,15 @@ abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     void getTaskByWrongId() {
 
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
                     taskManager.addTask(task);
                     final int taskId = task.getId() + 3;
                     taskManager.getTaskById(taskId);
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Task not found", ex.getMessage());
     }
 
     @Test
@@ -248,118 +248,21 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void getEpicById() {
-        EmptyListException ex = assertThrows(
-                EmptyListException.class,
+        WrongIdException ex = assertThrows(
+                WrongIdException.class,
                 () -> {
                     Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
                     taskManager.addEpic(epic);
                     final int taskId = epic.getId() + 3;
                     taskManager.getEpicById(taskId);
                 });
-        Assertions.assertEquals("List is empty", ex.getMessage());
+        Assertions.assertEquals("Epics not found", ex.getMessage());
 
     }
 
-    //тестов на печать в теории не было - это то что на гуглил
-    private ByteArrayOutputStream output = new ByteArrayOutputStream();
-
-    @Test
-    public void printTasksStandard() {
-        System.setOut(new PrintStream(output));
-        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
-        taskManager.addTask(task);
-        taskManager.printTasks();
-        Assertions.assertEquals("Task: " + task + "\r\n", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printTasksEmptyList() {
-        System.setOut(new PrintStream(output));
-        taskManager.printTasks();
-        Assertions.assertEquals("", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printEpicsStandard() {
-        System.setOut(new PrintStream(output));
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
-        taskManager.addEpic(epic);
-        taskManager.printEpics();
-        Assertions.assertEquals("Epic: " + epic + "\r\n" + "  Subtasks list:" + "\r\n" + " " + "\r\n", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printEpicEmptyList() {
-        System.setOut(new PrintStream(output));
-        taskManager.printEpics();
-        Assertions.assertEquals("", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printSubtasksStandard() {
-        System.setOut(new PrintStream(output));
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
-        taskManager.addEpic(epic);
-        Subtask subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
-        taskManager.addSubtask(subtask);
-        taskManager.printSubtasks();
-        Assertions.assertEquals("Subtask: " + subtask + "\r\n", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printSubtasksEmptyList() {
-        System.setOut(new PrintStream(output));
-        taskManager.printSubtasks();
-        Assertions.assertEquals("", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printEpicSubtasksStandard() {
-        System.setOut(new PrintStream(output));
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
-        taskManager.addEpic(epic);
-        Subtask subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
-        taskManager.addSubtask(subtask);
-        taskManager.printEpicSubtasks(epic);
-        Assertions.assertEquals("Subtask: " + subtask + "\r\n", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    public void printEpicSubtasksEmptyList() {
-        System.setOut(new PrintStream(output));
-        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
-        taskManager.addEpic(epic);
-        taskManager.printEpicSubtasks(epic);
-        Assertions.assertEquals("", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    void printViewHistoryStandard() {
-        System.setOut(new PrintStream(output));
-        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
-        taskManager.addTask(task);
-        final int taskId = task.getId();
-        taskManager.getTaskById(taskId);
-        taskManager.printViewHistory();
-        Assertions.assertEquals(" Viewed tasks from latest to oldest" + "\r\n" + task + "\r\n", output.toString());
-        System.setOut(null);
-    }
-
-    @Test
-    void printViewHistoryEmpty() {
-        System.setOut(new PrintStream(output));
-        taskManager.printViewHistory();
-        Assertions.assertEquals(" Viewed tasks from latest to oldest" + "\r\n", output.toString());
-        System.setOut(null);
-    }
+    //тесты печати удалил))) добавил на получение списков, но поймал себя на мысли, что даже если тест
+    // сортировки говорит "всё ок",
+    // хочется всё равно вывести на печать и убедится в этом визуально))) наверное это пройдёт)
 
 
     @Test
@@ -386,6 +289,59 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
                 });
         Assertions.assertEquals("Index 0 out of bounds for length 0", ex.getMessage());
+    }
+
+    @Test
+    void getPrioritizedTasks() {
+        fillData(taskManager);
+        Boolean isSorted = true;
+        ZonedDateTime previos = START_DAY_OF_TASK_LIST;
+        for (Task task : taskManager.getPrioritizedTasks()) {
+            if (task.getStartTime() != null) {
+                if (previos.isAfter(task.getStartTime())) {
+                    isSorted = false;
+                    break;
+                }
+                previos = task.getStartTime();
+            }
+        }
+        assertTrue(isSorted, "List isn't sorted");
+
+    }
+
+    @Test
+    void getTasks() {
+        Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
+        taskManager.addTask(task);
+        final int taskId = task.getId();
+        final Task savedTask = taskManager.getTasks().get(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(task, savedTask, "Задачи не совпадают.");
+
+    }
+
+    @Test
+    void getSubtasks() {
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
+        taskManager.addEpic(epic);
+        Subtask subtask = new Subtask("Test addNewSubtask", "Test addNewSubtask description", Status.NEW, 0);
+        taskManager.addSubtask(subtask);
+        final int taskId = subtask.getId();
+        final Task savedTask = taskManager.getSubtasks().get(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(subtask, savedTask, "Задачи не совпадают.");
+
+    }
+
+    @Test
+    void getEpics() {
+        Epic epic = new Epic("Test addNewEpic", "Test addNewEpic description", Status.NEW);
+        taskManager.addEpic(epic);
+        final int taskId = epic.getId();
+        final Task savedTask = taskManager.getEpics().get(taskId);
+        assertNotNull(savedTask, "Задача не найдена.");
+        assertEquals(epic, savedTask, "Задачи не совпадают.");
+
     }
 }
 
