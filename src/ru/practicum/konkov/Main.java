@@ -1,19 +1,32 @@
 package ru.practicum.konkov;
 
+import ru.practicum.konkov.API.KVServer;
+import ru.practicum.konkov.API.KVTaskClient;
 import ru.practicum.konkov.managers.*;
 import ru.practicum.konkov.task.*;
 
-public class Main {
+import java.io.IOException;
 
-    public static void main(String[] args) {
-        TaskManager manager = Managers.getDefault();
+public class Main {
+    public static String url = "http://localhost:8080";
+    private static String key = "test_key";
+
+    public static void main(String[] args) throws IOException {
+        new KVServer().start();
+//        KVTaskClient taskClient = new KVTaskClient(url);
+//        taskClient.put(key,"object for saving");
+//        System.out.println("This is what was fined"+taskClient.load(key));
+
+
+
+       TaskManager manager = Managers.getDefault();
         fillData(manager);
-        System.out.println(" Tasks list:");
-        manager.printTasks();
-        System.out.println(" Epics list:");
-        manager.printEpics();
-        System.out.println("\n\n Sorted Tasks:");
-        manager.printSortedTasks();
+//        System.out.println(" Tasks list:");
+//        manager.printTasks();
+//        System.out.println(" Epics list:");
+//        manager.printEpics();
+//        System.out.println("\n\n Sorted Tasks:");
+//        manager.printSortedTasks();
     }
 
     public static void fillData(TaskManager manager) {

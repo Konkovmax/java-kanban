@@ -2,7 +2,6 @@ package ru.practicum.konkov.managers;
 
 import ru.practicum.konkov.exceptions.EmptyListException;
 import ru.practicum.konkov.exceptions.NotFoundException;
-import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.task.*;
 
 import java.time.Duration;
@@ -13,12 +12,9 @@ import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    //C магическим числом - это я сплоховал, согласен, видимо рассказ про https://currentmillis.com
-    // создал впечатление, что число стало менее магическим
+
     private static final int INTERVALS_OF_15MINUTES_PER_YEAR = 35040;
     public static ZoneId zone = ZoneId.of("Europe/Moscow");
-    // по инструкции static final должно быть перед static, но в этом случае zone не видит, поэтому я их
-    // в хронологическом порядке переставил
     public static final ZonedDateTime START_DAY_OF_TASK_LIST = ZonedDateTime.of(LocalDateTime.of(2022, 5, 1, 0, 0), zone);
 
     protected Map<Integer, Task> tasks = new HashMap<>();
@@ -43,7 +39,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     public Set<Task> sortedTasks = new TreeSet<>(comparator);
 
-    // количество 15 минутных интервалов в году - отсюда https://currentmillis.com/?31536000861
     public void fillBusyIntervals() {
         for (int i = 0; i < INTERVALS_OF_15MINUTES_PER_YEAR; i++) {
             busyIntervals.put(i, false);

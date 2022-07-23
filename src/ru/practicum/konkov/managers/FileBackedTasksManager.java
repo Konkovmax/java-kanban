@@ -20,6 +20,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     public FileBackedTasksManager(String fileName) {
         file = new File("." + File.separator + "resources" + File.separator, fileName);
     }
+    public FileBackedTasksManager(){
+
+    }
 
     public static void main(String[] args) {
         FileBackedTasksManager fileTasksManager = new FileBackedTasksManager(fileName);
@@ -151,7 +154,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
-    private static List<Integer> historyFromString(String value) {
+    protected static List<Integer> historyFromString(String value) {
         List<Integer> history = new ArrayList<>();
         if (!value.isEmpty()) {
             for (String taskId : value.split(",")) {
@@ -161,7 +164,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return history;
     }
 
-    private static String historyToString(HistoryManager manager) {
+    protected static String historyToString(HistoryManager manager) {
         Iterator historyIterator = manager.getViewHistory().iterator();
         String history = "";
         for (Task task : manager.getViewHistory()) {
