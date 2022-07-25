@@ -16,7 +16,7 @@ import java.nio.file.Files;
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
 private static String url; //todo replace to url
     private static String key = "test_key";
-    KVTaskClient taskClient;
+    public static KVTaskClient taskClient;
     // не решил как лучше использовать эту переменную из класса родителя или просто здесь заново её объявить
     int lastIdFromFile = 0;
     public HTTPTaskManager(String url){
@@ -42,7 +42,7 @@ private static String url; //todo replace to url
     }
 
 
-     public HTTPTaskManager load() {
+     public static HTTPTaskManager load() {
         String fileContents = null;
         HTTPTaskManager manager = new HTTPTaskManager(url);
         manager.fillBusyIntervals();

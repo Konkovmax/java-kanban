@@ -23,17 +23,27 @@ public class HttpTaskServer {
     private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static TaskManager taskManager;
+    HttpServer httpServer;
 
     static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
 
     public static void main(String[] args) throws IOException {
         fillData(fileTasksManager);
-        HttpServer httpServer = HttpServer.create();
+      HttpTaskServer taskServer = new HttpTaskServer();
+      taskServer.startServer();
+        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+
+    }
+
+    public void startServer() throws IOException {
+        httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.start();
-        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
-        // httpServer.stop();
+    }
+
+    public void stopServer(){
+        httpServer.stop(0);
     }
 
     public static void fillData(FileBackedTasksManager manager) {

@@ -178,6 +178,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
+    public void removeAll(){
+        super.removeAll();
+        save();
+    }
+
+    @Override
     public void addSubtask(Subtask subtask) {
         super.addSubtask(subtask);
         save();

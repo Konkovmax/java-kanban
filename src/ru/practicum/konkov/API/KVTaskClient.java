@@ -90,8 +90,4 @@ public class KVTaskClient {
 }
 
 
-//        String load (String key)
-//        GET / load / < ключ > ? API_TOKEN =.
-
-
 

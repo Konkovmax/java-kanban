@@ -14,7 +14,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Постман: https://www.getpostman.com/collections/a83b61d9e1c81c10575c
  */
 public class KVServer {
-	public static final int PORT = 8080;
+	public static final int PORT = 8078;
 	private final String apiToken;
 	private final HttpServer server;
 	private final Map<String, String> data = new HashMap<>();
@@ -108,6 +108,11 @@ public class KVServer {
 		System.out.println("Открой в браузере http://localhost:" + PORT + "/");
 		System.out.println("API_TOKEN: " + apiToken);
 		server.start();
+	}
+
+	public void stop(){
+		server.stop(0);
+		System.out.println("Server stopped");
 	}
 
 	private String generateApiToken() {
