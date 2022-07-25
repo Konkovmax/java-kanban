@@ -28,18 +28,21 @@ public class HttpTaskServer {
     static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
 
     public static void main(String[] args) throws IOException {
-        fillData(fileTasksManager);
+       // fillData(fileTasksManager);
       HttpTaskServer taskServer = new HttpTaskServer();
       taskServer.startServer();
-        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
+
 
     }
 
     public void startServer() throws IOException {
+        fillData(fileTasksManager);
+
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.start();
+        System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
     }
 
     public void stopServer(){

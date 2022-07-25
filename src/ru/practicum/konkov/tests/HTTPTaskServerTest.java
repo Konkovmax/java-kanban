@@ -2,6 +2,7 @@ package ru.practicum.konkov.tests;
 
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpServer;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,9 @@ import ru.practicum.konkov.task.Status;
 import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,23 +29,28 @@ import java.nio.charset.StandardCharsets;
 public class HTTPTaskServerTest {
     String url = "http://localhost:8080/tasks/";
     private static final int PORT = 8080;
-    private final HttpClient client = HttpClient.newHttpClient();
+ //   private final HttpClient client = HttpClient.newHttpClient();
     static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
     private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-        HttpTaskServer taskServer = new HttpTaskServer();
+       // HttpTaskServer taskServer = new HttpTaskServer();
+
+
+        private HttpTaskServer httpTaskServer;
+    private HttpClient taskClient;
 
     @BeforeEach
-            void startServer() throws IOException {
-        taskServer.startServer();
-//        HttpServer httpServer = HttpServer.create();
-//        httpServer.bind(new InetSocketAddress(PORT), 0);
-//        httpServer.createContext("/tasks", new TasksHandler());
-//        httpServer.start();
-      //  taskServer.start();
-        //System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
-        // httpServer.stop();
+    public void startServers() throws IOException {
+        httpTaskServer = new HttpTaskServer();
+        httpTaskServer.startServer();
+        taskClient = HttpClient.newHttpClient();
     }
+
+    @AfterEach
+    public void stopServer() {
+        httpTaskServer.stopServer();
+    }
+
 
     public static void fillData(TaskManager manager) {
         manager.fillBusyIntervals();
@@ -65,31 +73,28 @@ public class HTTPTaskServerTest {
     }
 
     @Test
-    void GETTask() {
+    void GETTaskById() throws IOException {
+       // taskServer.startServer();
         String received = null;
         Task receivedTask = null;
         fillData(fileTasksManager);
-        URI uri = URI.create(url + "task/?id=1");
+        URI uri = URI.create(url + "task/?id=7");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .GET()
                 .build();
         try {
-            final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 receivedTask = gson.fromJson(response.body(), Task.class);
-                System.out.println("ok");
-            } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                received = response.body();
+                           } else {
+               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
-
-
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            System.out.println("Во время выполнения запроса возникла ошибка.");
         }
 
-        String expected = "0,EPIC,checklist for sprint,NEW,to minimize mistakes,";
-        Assertions.assertEquals(fileTasksManager.getTaskById(1), receivedTask);
+                Assertions.assertEquals(fileTasksManager.getTaskById(7), receivedTask);
     }
 }
