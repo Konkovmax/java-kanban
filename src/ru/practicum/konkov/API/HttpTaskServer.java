@@ -1,6 +1,7 @@
 package ru.practicum.konkov.API;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -20,12 +21,17 @@ import java.nio.charset.StandardCharsets;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    private static Gson gson = new Gson();
+    //private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static TaskManager taskManager;
     HttpServer httpServer;
 
-    static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
+    //static
+   public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
+   public static GsonBuilder builder = new GsonBuilder()
+           .registerTypeAdapter(Task.class, new TaskAdapter());
+
+    Gson gson = builder.create();
 
     public static void main(String[] args) throws IOException {
        // fillData(fileTasksManager);
@@ -36,6 +42,7 @@ public class HttpTaskServer {
     }
 
     public void startServer() throws IOException {
+        //fileTasksManager = new FileBackedTasksManager();
         fillData(fileTasksManager);
 
         httpServer = HttpServer.create();
@@ -67,9 +74,13 @@ public class HttpTaskServer {
         manager.addSubtask(subtask3);
         task2 = new Task("0study encapsulation", "without time", Status.NEW);
         manager.addTask(task2);
+        manager.getTaskById(1);
+        manager.getTaskById(0);
+        manager.getEpicById(2);
     }
 
-    static class TasksHandler implements HttpHandler {
+    //static
+    class TasksHandler implements HttpHandler {
 
 
         @Override
@@ -114,7 +125,7 @@ public class HttpTaskServer {
                             response = gson.toJson(fileTasksManager.getPrioritizedTasks());
 
                     }
-                    if (path.endsWith("history")) {
+                    if (path.endsWith("history/")) {
                         response = gson.toJson(fileTasksManager.getHistory());
                     }
 
