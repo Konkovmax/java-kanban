@@ -28,6 +28,10 @@ public class Subtask extends Task {
         return epicId;
     }
 
+    public void setEpicId(int epicId) {
+        this.epicId = epicId;
+    }
+
     public String toFileString() {
         return id + "," + "SUBTASK" + "," + name + ","
                 + status.toString() + "," + description + "," + ((startTime == null) ? "" : startTime.format(DATE_TIME_FORMATTER)) + "," +

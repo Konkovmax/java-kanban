@@ -43,6 +43,10 @@ public class Epic extends Task {
         return endTime;
     }
 
+    public void setEndTime(ZonedDateTime endTime) {
+        this.endTime = endTime;
+    }
+
     public void calculateDuration() {
         duration = 0;
         for (Subtask subtask : subtasks) {

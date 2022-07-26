@@ -29,7 +29,9 @@ public class HttpTaskServer {
     //static
    public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
    public static GsonBuilder builder = new GsonBuilder()
-           .registerTypeAdapter(Task.class, new TaskAdapter());
+           .registerTypeAdapter(Task.class, new TaskAdapter())
+           .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
+           .registerTypeAdapter(Epic.class, new EpicAdapter());
 
     Gson gson = builder.create();
 
@@ -97,7 +99,7 @@ public class HttpTaskServer {
 
             switch (method) {
                 case "GET": {
-                    if (path.endsWith("task/")) {
+                    if (path.endsWith("/task/")) {
                         if (taskId != 0) {
                             response = gson.toJson(fileTasksManager.getTaskById(taskId));
                         } else {
@@ -126,6 +128,7 @@ public class HttpTaskServer {
 
                     }
                     if (path.endsWith("history/")) {
+
                         response = gson.toJson(fileTasksManager.getHistory());
                     }
 

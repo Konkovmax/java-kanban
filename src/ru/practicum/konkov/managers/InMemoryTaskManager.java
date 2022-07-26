@@ -313,8 +313,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // просто это кардинальная трансформация - перестать выводить в консоль результаты трудов своих,
-    // а просто наблюдать их через тесты... Тесты добавил
     @Override
     public Set<Task> getPrioritizedTasks() {
 
