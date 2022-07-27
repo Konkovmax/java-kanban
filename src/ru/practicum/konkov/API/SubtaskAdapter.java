@@ -29,7 +29,7 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
         writer.value(task.getStatus().toString());
         writer.name("epicId");
         writer.value(task.getEpicId());
-        if(task.getStartTime()!=null){
+        if (task.getStartTime() != null) {
             writer.name("startTime");
             writer.value(task.getStartTime().format(DATE_TIME_FORMATTER));
             writer.name("duration");
@@ -40,7 +40,7 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
 
     @Override
     public Subtask read(JsonReader reader) throws IOException {
-        Subtask task = new Subtask("name","descr",Status.NEW,2);
+        Subtask task = new Subtask("name", "descr", Status.NEW, 2);
         reader.beginObject();
         String fieldname = null;
 
@@ -53,11 +53,12 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
             if ("id".equals(fieldname)) {
                 token = reader.peek();
                 task.setId(reader.nextInt());
-            } if ("epicId".equals(fieldname)) {
+            }
+            if ("epicId".equals(fieldname)) {
                 token = reader.peek();
                 task.setEpicId(reader.nextInt());
             }
-            if("description".equals(fieldname)) {
+            if ("description".equals(fieldname)) {
                 token = reader.peek();
                 task.setDescription(reader.nextString());
             }
@@ -65,7 +66,7 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
                 token = reader.peek();
                 task.setName(reader.nextString());
             }
-            if("status".equals(fieldname)) {
+            if ("status".equals(fieldname)) {
                 token = reader.peek();
                 task.setStatus(Status.valueOf(reader.nextString()));
             }
@@ -73,7 +74,7 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
                 token = reader.peek();
                 task.setStartTime(ZonedDateTime.of(LocalDateTime.parse(reader.nextString(), DATE_TIME_FORMATTER), zone));
             }
-            if("duration".equals(fieldname)) {
+            if ("duration".equals(fieldname)) {
                 token = reader.peek();
                 task.setDuration(reader.nextInt());
             }

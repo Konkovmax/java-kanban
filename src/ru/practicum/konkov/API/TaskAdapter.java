@@ -26,7 +26,7 @@ public class TaskAdapter extends TypeAdapter<Task> {
         writer.value(task.getDescription());
         writer.name("status");
         writer.value(task.getStatus().toString());
-        if(task.getStartTime()!=null){
+        if (task.getStartTime() != null) {
             writer.name("startTime");
             writer.value(task.getStartTime().format(DATE_TIME_FORMATTER));
             writer.name("description");
@@ -48,27 +48,27 @@ public class TaskAdapter extends TypeAdapter<Task> {
                 fieldname = reader.nextName();
             }
             if ("id".equals(fieldname)) {
-                    token = reader.peek();
+                token = reader.peek();
                 task.setId(reader.nextInt());
             }
-            if("description".equals(fieldname)) {
-                               token = reader.peek();
+            if ("description".equals(fieldname)) {
+                token = reader.peek();
                 task.setDescription(reader.nextString());
             }
             if ("name".equals(fieldname)) {
-                    token = reader.peek();
+                token = reader.peek();
                 task.setName(reader.nextString());
             }
-            if("status".equals(fieldname)) {
-                               token = reader.peek();
+            if ("status".equals(fieldname)) {
+                token = reader.peek();
                 task.setStatus(Status.valueOf(reader.nextString()));
             }
             if ("startTime".equals(fieldname)) {
-                    token = reader.peek();
+                token = reader.peek();
                 task.setStartTime(ZonedDateTime.of(LocalDateTime.parse(reader.nextString(), DATE_TIME_FORMATTER), zone));
             }
-            if("duration".equals(fieldname)) {
-                               token = reader.peek();
+            if ("duration".equals(fieldname)) {
+                token = reader.peek();
                 task.setDuration(reader.nextInt());
             }
         }

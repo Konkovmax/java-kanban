@@ -104,7 +104,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             throw new ManagerReadException(e.getMessage());
         }
         int historyLine = 0;
-        //т.к. сам метод прописан в ТЗ я не стал менять сигнатуру, но цикл разбил на 2 поменьше, согласно последнему ревью
         String[] lines = fileContents.split("\n");
         for (int j = 1; j < lines.length; j++) {
             if (lines[j].equals("")) {

@@ -27,14 +27,14 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+// как я и предполагал, в этот раз всё горело((( делать в спешке - это ужасно, но нам сказали,
+// что если проект до 28-го не отправить на ревью, то это провал. И сошлют в академ(((, чего очень бы не хотелось
+//
 public class HTTPTaskServerTest {
     String url = "http://localhost:8080/tasks/";
     private static final int PORT = 8080;
-    //   private final HttpClient client = HttpClient.newHttpClient();
-    //  static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
-    FileBackedTasksManager fileTasksManager;// = new FileBackedTasksManager("backedtasks.csv");
-   InMemoryHistoryManager historyManager;
+    FileBackedTasksManager fileTasksManager;
+    InMemoryHistoryManager historyManager;
     public static GsonBuilder builder = new GsonBuilder()
             .registerTypeAdapter(Task.class, new TaskAdapter())
             .registerTypeAdapter(Epic.class, new EpicAdapter())
@@ -43,8 +43,6 @@ public class HTTPTaskServerTest {
 
     Gson gson = builder.create();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    // HttpTaskServer taskServer = new HttpTaskServer();
-
 
     private HttpTaskServer httpTaskServer;
     private HttpClient taskClient;
@@ -53,7 +51,7 @@ public class HTTPTaskServerTest {
     public void startServers() throws IOException {
         fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
 
-historyManager = new InMemoryHistoryManager();
+        historyManager = new InMemoryHistoryManager();
         httpTaskServer = new HttpTaskServer();
 
         httpTaskServer.startServer();
@@ -86,12 +84,12 @@ historyManager = new InMemoryHistoryManager();
         manager.addTask(task2);
         manager.getTaskById(1);
         manager.getTaskById(0);
-        //manager.getEpicById(2);
+
     }
 
     @Test
     void GETTaskById() {
-              Task receivedTask = null;
+        Task receivedTask = null;
         fillData(fileTasksManager);
         URI uri = URI.create(url + "task/?id=1");
         HttpRequest request = HttpRequest.newBuilder()
@@ -113,7 +111,7 @@ historyManager = new InMemoryHistoryManager();
 
     @Test
     void GETSubtaskById() {
-              Subtask receivedTask = null;
+        Subtask receivedTask = null;
         fillData(fileTasksManager);
         URI uri = URI.create(url + "subtask/?id=5");
         HttpRequest request = HttpRequest.newBuilder()
@@ -135,7 +133,7 @@ historyManager = new InMemoryHistoryManager();
 
     @Test
     void GETEpicById() {
-              Epic receivedTask = null;
+        Epic receivedTask = null;
         fillData(fileTasksManager);
         URI uri = URI.create(url + "epic/?id=3");
         HttpRequest request = HttpRequest.newBuilder()
@@ -152,38 +150,11 @@ historyManager = new InMemoryHistoryManager();
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-        Assertions.assertEquals(fileTasksManager.getEpicById(3).toString(),receivedTask.toString());
+        Assertions.assertEquals(fileTasksManager.getEpicById(3).toString(), receivedTask.toString());
     }
+
 
     @Test
-    void GETHistory() {
-             ArrayList<Task> history = new ArrayList<>();
-        fillData(fileTasksManager);
-
-        URI uri = URI.create(url + "history/");
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uri)
-                .GET()
-                .build();
-        try {
-            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                historyManager = gson.fromJson(response.body(), InMemoryHistoryManager.class);
-                //history = gson.fromJson(response.body(), new TypeToken<List<Task>>() {}.getType());
-                //historyManager = gson.fromJson(response.body(), new TypeToken<List<Task>>() {}.getType());
-                //history = gson.fromJson(response.body(), Task.class);
-            } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
-            }
-        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-            System.out.println("Во время выполнения запроса возникла ошибка.");
-        }
-
-        Assertions.assertEquals(fileTasksManager.getHistory(), historyManager.getViewHistory());
-//        Assertions.assertEquals(fileTasksManager.getHistory(), history);
-    }
-
-       @Test
     void GETTasks() {
 
         HashMap<Integer, Task> receivedTasks = new HashMap<>();
@@ -196,18 +167,19 @@ historyManager = new InMemoryHistoryManager();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer,Task>>(){}.getType());
-                           } else {
-               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer, Task>>() {
+                }.getType());
+            } else {
+                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-                Assertions.assertEquals(fileTasksManager.getTasks(), receivedTasks);
+        Assertions.assertEquals(fileTasksManager.getTasks(), receivedTasks);
     }
 
 
-       @Test
+    @Test
     void GETEpics() {
 
         HashMap<Integer, Epic> receivedTasks = new HashMap<>();
@@ -220,17 +192,18 @@ historyManager = new InMemoryHistoryManager();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer,Epic>>(){}.getType());
-                           } else {
-               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer, Epic>>() {
+                }.getType());
+            } else {
+                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-                Assertions.assertEquals(fileTasksManager.getEpics().size(), receivedTasks.size());
+        Assertions.assertEquals(fileTasksManager.getEpics().size(), receivedTasks.size());
     }
 
-       @Test
+    @Test
     void GETSubtasks() {
 
         HashMap<Integer, Subtask> receivedTasks = new HashMap<>();
@@ -243,47 +216,21 @@ historyManager = new InMemoryHistoryManager();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer,Subtask>>(){}.getType());
-                           } else {
-               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer, Subtask>>() {
+                }.getType());
+            } else {
+                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-                Assertions.assertEquals(fileTasksManager.getSubtasks(), receivedTasks);
+        Assertions.assertEquals(fileTasksManager.getSubtasks(), receivedTasks);
     }
-
-//       @Test
-//    void GETPrioritizedTasks() {
-//
-//        Set<Task> receivedTasks = new TreeSet<>();
-//        fillData(fileTasksManager);
-//        URI uri = URI.create(url);
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(uri)
-//                .GET()
-//                .build();
-//        try {
-//            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-//            if (response.statusCode() == 200) {
-//               // receivedTasks = gson.fromJson(response.body(), new TypeToken<TreeSet<Task>>(){}.getType());
-//                receivedTasks = gson.fromJson(response.body(), new TypeToken<TreeSet<Task>>(){}.getType());
-//                           } else {
-//               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
-//            }
-//        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-//            System.out.println("Во время выполнения запроса возникла ошибка.");
-//        }
-//                Assertions.assertEquals(fileTasksManager.getPrioritizedTasks(), receivedTasks);
-//    }
 
     @Test
     void POSTTask() {
         String received = null;
-        //Map<Integer, Task> receivedTasks;
-        //fillData(fileTasksManager);
         Task task1 = new Task("0study encapsulation", "without time", Status.NEW);
-        //fileTasksManager.addEpic(epic1);
         URI uri = URI.create(url + "task/");
         String json = gson.toJson(task1, Task.class);
         task1.setId(8);
@@ -294,7 +241,6 @@ historyManager = new InMemoryHistoryManager();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                // receivedTasks = gson.fromJson(response.body(), Task.class);
                 received = response.body();
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
@@ -314,14 +260,13 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-        assertEquals(2,httpTaskServer.fileTasksManager.getTasks().size());
+        assertEquals(2, httpTaskServer.fileTasksManager.getTasks().size());
     }
 
     @Test
@@ -333,14 +278,13 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-        assertEquals(1,httpTaskServer.fileTasksManager.getEpics().size());
+        assertEquals(1, httpTaskServer.fileTasksManager.getEpics().size());
     }
 
     @Test
@@ -352,14 +296,13 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-        assertEquals(2,httpTaskServer.fileTasksManager.getSubtasks().size());
+        assertEquals(2, httpTaskServer.fileTasksManager.getSubtasks().size());
     }
 
 
@@ -372,8 +315,7 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
@@ -391,8 +333,7 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
@@ -410,8 +351,7 @@ historyManager = new InMemoryHistoryManager();
                 .build();
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200) {
-                       } else {
+            if (response.statusCode() != 200) {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса

@@ -1,52 +1,49 @@
 package ru.practicum.konkov.API;
 
-import ru.practicum.konkov.exceptions.ManagerReadException;
 import ru.practicum.konkov.managers.FileBackedTasksManager;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
-private static String url; //todo replace to url
-    private static String key = "test_key";
+    private static final String key = "test_key";
+
     public static KVTaskClient taskClient;
+
+    private static String url;
+
     // не решил как лучше использовать эту переменную из класса родителя или просто здесь заново её объявить
     int lastIdFromFile = 0;
-    public HTTPTaskManager(String url){
+
+    public HTTPTaskManager(String url) {
         this.url = url;
         taskClient = new KVTaskClient(url);
     }
 
     @Override
-    public void save(){
+    public void save() {
         String header = "id,type,name,status,description,startTime,duration,epic";
-        String manager =header + "\n";
-            for (Task task : tasks.values()) {
-                manager= manager +task.toFileString() + "\n";
-            }
-            for (Epic epic : epics.values()) {
-                manager= manager +epic.toFileString() + "\n";
-            }
-            for (Subtask subtask : subtasks.values()) {
-                manager= manager + subtask.toFileString() + "\n";
-            }
-        manager= manager +"\n"+ super.historyToString(history);
-            taskClient.put(key,manager);
+        String manager = header + "\n";
+        for (Task task : tasks.values()) {
+            manager = manager + task.toFileString() + "\n";
+        }
+        for (Epic epic : epics.values()) {
+            manager = manager + epic.toFileString() + "\n";
+        }
+        for (Subtask subtask : subtasks.values()) {
+            manager = manager + subtask.toFileString() + "\n";
+        }
+        manager = manager + "\n" + super.historyToString(history);
+        taskClient.put(key, manager);
     }
 
 
-     public static HTTPTaskManager load() {
+    public static HTTPTaskManager load() {
         String fileContents = null;
         HTTPTaskManager manager = new HTTPTaskManager(url);
         manager.fillBusyIntervals();
-            fileContents = taskClient.load(key);
+        fileContents = taskClient.load(key);
 
         int historyLine = 0;
         String[] lines = fileContents.split("\n");

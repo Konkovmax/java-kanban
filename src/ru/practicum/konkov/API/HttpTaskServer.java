@@ -22,34 +22,26 @@ import java.nio.charset.StandardCharsets;
 
 public class HttpTaskServer {
     private static final int PORT = 8080;
-    //private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static TaskManager taskManager;
-    HttpServer httpServer;
 
-    //static
-   public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
-   InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-   public static GsonBuilder builder = new GsonBuilder()
-           .registerTypeAdapter(Task.class, new TaskAdapter())
-           .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
-           .registerTypeAdapter(InMemoryHistoryManager.class, new HistoryAdapter())
-           .registerTypeAdapter(Epic.class, new EpicAdapter());
-
+    public HttpServer httpServer;
+    public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
+    public InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+    public static GsonBuilder builder = new GsonBuilder()
+            .registerTypeAdapter(Task.class, new TaskAdapter())
+            .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
+            .registerTypeAdapter(InMemoryHistoryManager.class, new HistoryAdapter())
+            .registerTypeAdapter(Epic.class, new EpicAdapter());
     Gson gson = builder.create();
 
     public static void main(String[] args) throws IOException {
-       // fillData(fileTasksManager);
-      HttpTaskServer taskServer = new HttpTaskServer();
-      taskServer.startServer();
-
-
+        HttpTaskServer taskServer = new HttpTaskServer();
+        taskServer.startServer();
     }
 
     public void startServer() throws IOException {
-        //fileTasksManager = new FileBackedTasksManager();
         fillData(fileTasksManager);
-
         httpServer = HttpServer.create();
         httpServer.bind(new InetSocketAddress(PORT), 0);
         httpServer.createContext("/tasks", new TasksHandler());
@@ -57,7 +49,7 @@ public class HttpTaskServer {
         System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
     }
 
-    public void stopServer(){
+    public void stopServer() {
         httpServer.stop(0);
     }
 
@@ -84,7 +76,6 @@ public class HttpTaskServer {
         manager.getEpicById(3);
     }
 
-    //static
     class TasksHandler implements HttpHandler {
 
 
@@ -126,15 +117,14 @@ public class HttpTaskServer {
                         } else {
                             response = gson.toJson(fileTasksManager.getSubtasks());
                         }
-                    } if (path.endsWith("tasks/")) {
-                            response = gson.toJson(fileTasksManager.getPrioritizedTasks());
-
+                    }
+                    if (path.endsWith("tasks/")) {
+                        response = gson.toJson(fileTasksManager.getPrioritizedTasks());
 
                     }
                     if (path.endsWith("history/")) {
-                        response = gson.toJson(historyManager);
-//                        response = gson.toJson(fileTasksManager.getHistory());
-                        }
+                        response = gson.toJson(fileTasksManager.getHistory());
+                    }
 
                     code = 200;
                     break;

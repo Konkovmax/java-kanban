@@ -49,8 +49,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         manager.addTask(task2);
     }
 
-    // для добавления задач не делал тесты по сценарию: "С пустым списком задач" и "С неверным идентификатором задачи"
-    // т.к. в этих методах не важна полнота списка и не используется идентификатор. Это правильно?
     @Test
     public void addTaskStandard() {
         Task task = new Task("Test addNewTask", "Test addNewTask description", Status.NEW);
@@ -214,7 +212,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals("Subtask not found", ex.getMessage());
     }
 
-    // по п.10 да всё верно, просто подумал, может, этого недостаточно.
     @Test
     void removeAll() {
     }
@@ -260,11 +257,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
         Assertions.assertEquals("Epics not found", ex.getMessage());
 
     }
-
-    //тесты печати удалил))) добавил на получение списков, но поймал себя на мысли, что даже если тест
-    // сортировки говорит "всё ок",
-    // хочется всё равно вывести на печать и убедится в этом визуально))) наверное это пройдёт)
-
 
     @Test
     void getHistoryStandard() {

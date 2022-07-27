@@ -15,27 +15,23 @@ public class HistoryAdapter extends TypeAdapter<InMemoryHistoryManager> {
 
     @Override
     public void write(JsonWriter writer, InMemoryHistoryManager historyManager) throws IOException {
-  //      writer.beginObject();
         writer.beginArray();
         List<Task> history = historyManager.getViewHistory();
-        for (Task task : history){
+        for (Task task : history) {
             writer.value(task.toString());
         }
-//        writer.endObject();
         writer.endArray();
 
     }
 
     @Override
     public InMemoryHistoryManager read(JsonReader jsonReader) throws IOException {
-  //      jsonReader.beginObject();
         jsonReader.beginArray();
         InMemoryHistoryManager historyManager = (InMemoryHistoryManager) Managers.getDefault();
         List<String> history = new ArrayList<>();
-        while (jsonReader.hasNext()){
+        while (jsonReader.hasNext()) {
             history.add(jsonReader.nextString());
         }
-//        jsonReader.endObject();
         jsonReader.endArray();
         return historyManager;
     }

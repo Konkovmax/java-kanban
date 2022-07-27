@@ -61,8 +61,6 @@ public class InMemoryTaskManager implements TaskManager {
         generateNewId();
     }
 
-    //я вижу ситуацию следующим образом, id эпика, к которому относится сабтаск, мы передаём в конструкторе
-// сабтаска, соответственно мы можем передать id несуществующего эпика и тогда будет ошибка неправильный id
     @Override
     public void addSubtask(Subtask subtask) {
         try {
@@ -140,9 +138,6 @@ public class InMemoryTaskManager implements TaskManager {
         subtasks.clear();
     }
 
-    //тут мне не в чем тебя поправить... полностью согласен с твоими рассуждениями.
-    // Исправил. Только сделал WrongIdException, а не NotFoundException, чтобы новое исключение не
-    // создавать, т.к. решил это не меняет сути
     @Override
     public Task getSubtaskById(int id) {
         Task targetTask = null;
@@ -253,7 +248,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    // про деградацию по мере роста таблицы я не подумал... Спасибо, что всё так по полочкам разложил!
     public void checkTimeCrossing(Task newTask) {
         if (newTask.getStartTime() != null) {
             boolean timeCrossingEliminated = true;

@@ -30,15 +30,13 @@ public class HttpTaskClient {
 
 
     private static final int PORT = 8080;
-    //   private final HttpClient client = HttpClient.newHttpClient();
     static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
     private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    // HttpTaskServer taskServer = new HttpTaskServer();
 
 
     static private HttpTaskServer httpTaskServer;
-   static private HttpClient taskClient;
+    static private HttpClient taskClient;
 
     public static void main(String[] args) throws IOException {
         String url = "http://localhost:8080/tasks/";
@@ -46,7 +44,6 @@ public class HttpTaskClient {
         httpTaskServer = new HttpTaskServer();
         httpTaskServer.startServer();
         taskClient = HttpClient.newHttpClient();
-
 
 
         String received = null;
@@ -61,7 +58,7 @@ public class HttpTaskClient {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 receivedTask = gson.fromJson(response.body(), Task.class);
-                 System.out.println("ok");
+                System.out.println("ok");
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
             }
@@ -71,16 +68,6 @@ public class HttpTaskClient {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку.");
         }
-//       taskServer.startServer();
-//       // System.setOut(new PrintStream(new ByteArrayOutputStream()));
-    //        taskServer.startServer();
-////        HttpServer httpServer = HttpServer.create();
-////        httpServer.bind(new InetSocketAddress(PORT), 0);
-////        httpServer.createContext("/tasks", new TasksHandler());
-////        httpServer.start();
-//      //  taskServer.start();
-//        //System.out.println("HTTP-сервер запущен на " + PORT + " порту!");
-//        // httpServer.stop();
     }
 
     public static void fillData(TaskManager manager) {
@@ -102,35 +89,6 @@ public class HttpTaskClient {
         task2 = new Task("0study encapsulation", "without time", Status.NEW);
         manager.addTask(task2);
     }
-
-//    @Test
-//    void GETTask() throws IOException {
-//        // taskServer.startServer();
-//        String received = null;
-//        Task receivedTask = null;
-//        fillData(fileTasksManager);
-//        URI uri = URI.create(url + "task/?id=1");
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(uri)
-//                .GET()
-//                .build();
-//        try {
-//            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
-//            if (response.statusCode() == 200) {
-//                receivedTask = gson.fromJson(response.body(), Task.class);
-//                // System.out.println("ok");
-//            } else {
-//                //System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
-//            }
-//
-//
-//        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-//            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-//                    "Проверьте, пожалуйста, адрес и повторите попытку.");
-//        }
-//
-//        Assertions.assertEquals(fileTasksManager.getTaskById(1), receivedTask);
-//    }
 
 }
 
