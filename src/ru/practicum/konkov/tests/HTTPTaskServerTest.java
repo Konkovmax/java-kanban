@@ -25,9 +25,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -206,6 +204,78 @@ public class HTTPTaskServerTest {
         }
                 Assertions.assertEquals(fileTasksManager.getTasks(), receivedTasks);
     }
+
+
+       @Test
+    void GETEpics() {
+
+        HashMap<Integer, Epic> receivedTasks = new HashMap<>();
+        fillData(fileTasksManager);
+        URI uri = URI.create(url + "epic/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+        try {
+            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer,Epic>>(){}.getType());
+                           } else {
+               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+            }
+        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
+            System.out.println("Во время выполнения запроса возникла ошибка.");
+        }
+                Assertions.assertEquals(fileTasksManager.getEpics(), receivedTasks);
+    }
+
+       @Test
+    void GETSubtasks() {
+
+        HashMap<Integer, Subtask> receivedTasks = new HashMap<>();
+        fillData(fileTasksManager);
+        URI uri = URI.create(url + "subtask/");
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .GET()
+                .build();
+        try {
+            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                receivedTasks = gson.fromJson(response.body(), new TypeToken<HashMap<Integer,Subtask>>(){}.getType());
+                           } else {
+               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+            }
+        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
+            System.out.println("Во время выполнения запроса возникла ошибка.");
+        }
+                Assertions.assertEquals(fileTasksManager.getSubtasks(), receivedTasks);
+    }
+
+//       @Test
+//    void GETPrioritizedTasks() {
+//
+//        Set<Task> receivedTasks = new TreeSet<>();
+//        fillData(fileTasksManager);
+//        URI uri = URI.create(url);
+//        HttpRequest request = HttpRequest.newBuilder()
+//                .uri(uri)
+//                .GET()
+//                .build();
+//        try {
+//            final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
+//            if (response.statusCode() == 200) {
+//               // receivedTasks = gson.fromJson(response.body(), new TypeToken<TreeSet<Task>>(){}.getType());
+//                receivedTasks = gson.fromJson(response.body(), new TypeToken<TreeSet<Task>>(){}.getType());
+//                           } else {
+//               System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+//            }
+//        } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
+//            System.out.println("Во время выполнения запроса возникла ошибка.");
+//        }
+//                Assertions.assertEquals(fileTasksManager.getPrioritizedTasks(), receivedTasks);
+//    }
+
     @Test
     void POSTTask() {
         String received = null;

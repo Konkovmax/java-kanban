@@ -237,10 +237,7 @@ public class InMemoryTaskManager implements TaskManager {
         return epics;
     }
 
-    //я не делал консольный ввод, поэтому в случае пересечения задач по времени, сообщений не выводится,
-// просто время новой задачи сдвигается после окончания уже имеющейся +15 минут
-    // Т.к. в доп задании пересечение надо искать вторым способом, то я первый сохранил, потому что неизвестно
-    //какой из них будет нужнее потом
+
     public void checkTimeCrossingBasic(Task newTask) {
         if (!sortedTasks.isEmpty() && newTask.getStartTime() != null) {
             for (Task task : sortedTasks) {

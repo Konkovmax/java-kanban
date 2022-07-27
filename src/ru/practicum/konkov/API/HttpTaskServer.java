@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.practicum.konkov.managers.FileBackedTasksManager;
+import ru.practicum.konkov.managers.InMemoryHistoryManager;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
@@ -31,6 +32,7 @@ public class HttpTaskServer {
    public static GsonBuilder builder = new GsonBuilder()
            .registerTypeAdapter(Task.class, new TaskAdapter())
            .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
+           .registerTypeAdapter(InMemoryHistoryManager.class, new HistoryAdapter())
            .registerTypeAdapter(Epic.class, new EpicAdapter());
 
     Gson gson = builder.create();
@@ -78,7 +80,7 @@ public class HttpTaskServer {
         manager.addTask(task2);
         manager.getTaskById(1);
         manager.getTaskById(0);
-        manager.getEpicById(2);
+        manager.getEpicById(3);
     }
 
     //static
@@ -126,11 +128,11 @@ public class HttpTaskServer {
                     } if (path.endsWith("tasks/")) {
                             response = gson.toJson(fileTasksManager.getPrioritizedTasks());
 
+
                     }
                     if (path.endsWith("history/")) {
-
                         response = gson.toJson(fileTasksManager.getHistory());
-                    }
+                        }
 
                     code = 200;
                     break;
