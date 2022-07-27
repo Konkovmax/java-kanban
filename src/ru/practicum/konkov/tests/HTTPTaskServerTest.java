@@ -7,11 +7,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.konkov.API.HttpTaskServer;
-import ru.practicum.konkov.API.EpicAdapter;
-import ru.practicum.konkov.API.SubtaskAdapter;
-import ru.practicum.konkov.API.TaskAdapter;
+import ru.practicum.konkov.API.*;
 import ru.practicum.konkov.managers.FileBackedTasksManager;
+import ru.practicum.konkov.managers.InMemoryHistoryManager;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
@@ -36,10 +34,12 @@ public class HTTPTaskServerTest {
     //   private final HttpClient client = HttpClient.newHttpClient();
     //  static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
     FileBackedTasksManager fileTasksManager;// = new FileBackedTasksManager("backedtasks.csv");
+   InMemoryHistoryManager historyManager;
     public static GsonBuilder builder = new GsonBuilder()
             .registerTypeAdapter(Task.class, new TaskAdapter())
             .registerTypeAdapter(Epic.class, new EpicAdapter())
-            .registerTypeAdapter(Subtask.class, new SubtaskAdapter());
+            .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
+            .registerTypeAdapter(InMemoryHistoryManager.class, new HistoryAdapter());
 
     Gson gson = builder.create();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -53,6 +53,7 @@ public class HTTPTaskServerTest {
     public void startServers() throws IOException {
         fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
 
+historyManager = new InMemoryHistoryManager();
         httpTaskServer = new HttpTaskServer();
 
         httpTaskServer.startServer();
@@ -158,9 +159,7 @@ public class HTTPTaskServerTest {
     void GETHistory() {
              ArrayList<Task> history = new ArrayList<>();
         fillData(fileTasksManager);
-//        fileTasksManager.getTaskById(1);
-//        fileTasksManager.getTaskById(0);
-//        fileTasksManager.getEpicById(2);
+
         URI uri = URI.create(url + "history/");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -169,8 +168,9 @@ public class HTTPTaskServerTest {
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                history = gson.fromJson(response.body(), new TypeToken<ArrayList<Task>>() {
-                }.getType());
+                historyManager = gson.fromJson(response.body(), InMemoryHistoryManager.class);
+                //history = gson.fromJson(response.body(), new TypeToken<List<Task>>() {}.getType());
+                //historyManager = gson.fromJson(response.body(), new TypeToken<List<Task>>() {}.getType());
                 //history = gson.fromJson(response.body(), Task.class);
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
@@ -179,7 +179,8 @@ public class HTTPTaskServerTest {
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
 
-        Assertions.assertEquals(fileTasksManager.getHistory(), history);
+        Assertions.assertEquals(fileTasksManager.getHistory(), historyManager.getViewHistory());
+//        Assertions.assertEquals(fileTasksManager.getHistory(), history);
     }
 
        @Test
@@ -226,7 +227,7 @@ public class HTTPTaskServerTest {
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
             System.out.println("Во время выполнения запроса возникла ошибка.");
         }
-                Assertions.assertEquals(fileTasksManager.getEpics(), receivedTasks);
+                Assertions.assertEquals(fileTasksManager.getEpics().size(), receivedTasks.size());
     }
 
        @Test

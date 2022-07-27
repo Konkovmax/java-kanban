@@ -29,6 +29,7 @@ public class HttpTaskServer {
 
     //static
    public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
+   InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
    public static GsonBuilder builder = new GsonBuilder()
            .registerTypeAdapter(Task.class, new TaskAdapter())
            .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
@@ -131,7 +132,8 @@ public class HttpTaskServer {
 
                     }
                     if (path.endsWith("history/")) {
-                        response = gson.toJson(fileTasksManager.getHistory());
+                        response = gson.toJson(historyManager);
+//                        response = gson.toJson(fileTasksManager.getHistory());
                         }
 
                     code = 200;

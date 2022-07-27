@@ -29,9 +29,9 @@ public class EpicAdapter extends TypeAdapter<Epic> {
         writer.value(task.getDescription());
         writer.name("status");
         writer.value(task.getStatus().toString());
+        if(task.getStartTime()!=null){
         writer.name("endTime");
         writer.value(task.getEndTime().format(DATE_TIME_FORMATTER));
-        if(task.getStartTime()!=null){
             writer.name("startTime");
             writer.value(task.getStartTime().format(DATE_TIME_FORMATTER));
             writer.name("duration");

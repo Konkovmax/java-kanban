@@ -8,4 +8,4 @@ id,type,name,status,description,startTime,duration,epic
 5,SUBTASK,4Line between methods,IN_PROGRESS,,01.05.22 10:00,60,3
 6,SUBTASK,5visibility of variables,NEW,,11.05.22 10:00,60,3
 
-3,0,1
+0,1
