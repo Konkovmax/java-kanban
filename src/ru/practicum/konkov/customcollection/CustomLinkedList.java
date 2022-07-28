@@ -1,6 +1,5 @@
 package ru.practicum.konkov.customcollection;
 
-import ru.practicum.konkov.customcollection.Node;
 import ru.practicum.konkov.task.Task;
 import java.util.ArrayList;
 import java.util.List;

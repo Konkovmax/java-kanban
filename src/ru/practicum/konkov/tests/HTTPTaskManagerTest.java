@@ -4,13 +4,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.konkov.API.HTTPTaskManager;
-import ru.practicum.konkov.API.KVServer;
+import ru.practicum.konkov.api.HTTPTaskManager;
+import ru.practicum.konkov.api.KVServer;
 import ru.practicum.konkov.Main;
+import ru.practicum.konkov.exceptions.APIException;
 import ru.practicum.konkov.exceptions.NotFoundException;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
+import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
 import java.io.IOException;
@@ -22,21 +24,22 @@ public class HTTPTaskManagerTest extends TaskManagerTest {
 
     KVServer server;
 
-    public HTTPTaskManagerTest() {
+    public HTTPTaskManagerTest() throws IOException {
     }
 
     @Override
-    public TaskManager createTaskManager() {
+    public TaskManager createTaskManager() throws IOException {
         return new HTTPTaskManager(Main.url);
     }
 
-
     HTTPTaskManager httpTasksManager = new HTTPTaskManager("http://localhost:8078");
+
 
     @BeforeEach
     void startServer() throws IOException {
         server = new KVServer();
         server.start();
+
     }
 
     @AfterEach
@@ -46,11 +49,13 @@ public class HTTPTaskManagerTest extends TaskManagerTest {
 
     @Test
     void saveEpicWithoutSubtasksAndWithoutHistory() throws IOException {
-        Epic epic1 = new Epic("checklist for sprint", "to minimize mistakes");
+
+        Epic epic1 = new Epic("from web checklist for sprint", "to minimize mistakes");
+
         httpTasksManager.addEpic(epic1);
         HTTPTaskManager manager = httpTasksManager.load();
         String fileContents = manager.getEpicById(0).toFileString();
-        String expected = "0,EPIC,checklist for sprint,NEW,to minimize mistakes,";
+        String expected = "0,EPIC,from web checklist for sprint,NEW,to minimize mistakes,";
         Assertions.assertEquals(expected, fileContents);
 
     }
@@ -73,15 +78,12 @@ public class HTTPTaskManagerTest extends TaskManagerTest {
 
     @Test
     void loadFromFileWithoutTasks() throws IOException {
-        HTTPTaskManager manager = httpTasksManager.load();
-        final List<Task> history = manager.getHistory();
-        assertTrue(history.isEmpty());
-        NotFoundException ex = assertThrows(
-                NotFoundException.class,
+        APIException ex = assertThrows(
+                APIException.class,
                 () -> {
-                    manager.getTaskById(1);
+        HTTPTaskManager manager = httpTasksManager.load();
                 });
-        Assertions.assertEquals("Task not found", ex.getMessage());
+        Assertions.assertEquals("object not loaded", ex.getMessage());
     }
 
     @Test

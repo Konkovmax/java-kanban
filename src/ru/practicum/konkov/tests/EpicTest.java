@@ -7,12 +7,17 @@ import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
 import ru.practicum.konkov.task.Subtask;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 
     TaskManager manager = Managers.getDefault();
     Epic epic = new Epic("epic for tests", "comprehensive testing");
+
+    EpicTest() throws IOException {
+    }
 
     public void createSubtasks(Status subtask1Status, Status subtask2Status, Status subtask3Status) {
         manager.addEpic(epic);

@@ -1,11 +1,10 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import ru.practicum.konkov.task.Status;
-import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
 import java.io.IOException;
@@ -15,9 +14,9 @@ import java.time.ZonedDateTime;
 import static ru.practicum.konkov.managers.InMemoryTaskManager.zone;
 import static ru.practicum.konkov.task.Task.DATE_TIME_FORMATTER;
 
-public class SubtaskAdapter extends TypeAdapter<Subtask> {
+public class TaskAdapter extends TypeAdapter<Task> {
     @Override
-    public void write(JsonWriter writer, Subtask task) throws IOException {
+    public void write(JsonWriter writer, Task task) throws IOException {
         writer.beginObject();
         writer.name("id");
         writer.value(task.getId());
@@ -27,20 +26,18 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
         writer.value(task.getDescription());
         writer.name("status");
         writer.value(task.getStatus().toString());
-        writer.name("epicId");
-        writer.value(task.getEpicId());
         if (task.getStartTime() != null) {
             writer.name("startTime");
             writer.value(task.getStartTime().format(DATE_TIME_FORMATTER));
-            writer.name("duration");
-            writer.value(task.getDuration());
+            writer.name("description");
+            writer.value(task.getDescription());
         }
         writer.endObject();
     }
 
     @Override
-    public Subtask read(JsonReader reader) throws IOException {
-        Subtask task = new Subtask("name", "descr", Status.NEW, 2);
+    public Task read(JsonReader reader) throws IOException {
+        Task task = new Task();
         reader.beginObject();
         String fieldname = null;
 
@@ -53,10 +50,6 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {
             if ("id".equals(fieldname)) {
                 token = reader.peek();
                 task.setId(reader.nextInt());
-            }
-            if ("epicId".equals(fieldname)) {
-                token = reader.peek();
-                task.setEpicId(reader.nextInt());
             }
             if ("description".equals(fieldname)) {
                 token = reader.peek();

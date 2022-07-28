@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.konkov.API.*;
+import ru.practicum.konkov.api.*;
 import ru.practicum.konkov.managers.FileBackedTasksManager;
 import ru.practicum.konkov.managers.InMemoryHistoryManager;
 import ru.practicum.konkov.managers.TaskManager;
@@ -27,9 +27,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// как я и предполагал, в этот раз всё горело((( делать в спешке - это ужасно, но нам сказали,
-// что если проект до 28-го не отправить на ревью, то это провал. И сошлют в академ(((, чего очень бы не хотелось
-//
+
 public class HTTPTaskServerTest {
     String url = "http://localhost:8080/tasks/";
     private static final int PORT = 8080;

@@ -1,4 +1,4 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

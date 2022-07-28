@@ -1,12 +1,6 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.google.gson.Gson;
-import com.sun.net.httpserver.HttpServer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import ru.practicum.konkov.API.HttpTaskServer;
 import ru.practicum.konkov.managers.FileBackedTasksManager;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
@@ -14,10 +8,7 @@ import ru.practicum.konkov.task.Status;
 import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -29,7 +20,6 @@ import java.nio.charset.StandardCharsets;
 public class HttpTaskClient {
 
 
-    private static final int PORT = 8080;
     static FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
     private static Gson gson = new Gson();
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -46,8 +36,6 @@ public class HttpTaskClient {
         taskClient = HttpClient.newHttpClient();
 
 
-        String received = null;
-        Task receivedTask = null;
         fillData(fileTasksManager);
         URI uri = URI.create(url + "task/?id=1");
         HttpRequest request = HttpRequest.newBuilder()
@@ -57,7 +45,6 @@ public class HttpTaskClient {
         try {
             final HttpResponse<String> response = taskClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                receivedTask = gson.fromJson(response.body(), Task.class);
                 System.out.println("ok");
             } else {
                 System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());

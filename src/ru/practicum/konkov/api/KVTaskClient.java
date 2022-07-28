@@ -1,4 +1,7 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
+
+import ru.practicum.konkov.exceptions.APIException;
+import ru.practicum.konkov.exceptions.NotFoundException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,8 +35,7 @@ public class KVTaskClient {
 
 
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            throw new APIException("registration failed");
         }
     }
 
@@ -50,13 +52,10 @@ public class KVTaskClient {
 
                 System.out.println("object saved");
             } else {
-                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                throw new APIException("object not saved");
             }
-
-
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+
         }
     }
 
@@ -78,8 +77,7 @@ public class KVTaskClient {
 
 
         } catch (IOException | NullPointerException | InterruptedException e) { // обрабатываем ошибки отправки запроса
-            System.out.println("Во время выполнения запроса возникла ошибка.\n" +
-                    "Проверьте, пожалуйста, адрес и повторите попытку.");
+            throw new APIException("object not loaded");
         }
         return result;
     }

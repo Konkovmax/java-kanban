@@ -1,8 +1,7 @@
 package ru.practicum.konkov;
 
-import ru.practicum.konkov.API.HTTPTaskManager;
-import ru.practicum.konkov.API.KVServer;
-import ru.practicum.konkov.API.KVTaskClient;
+import ru.practicum.konkov.api.HTTPTaskManager;
+import ru.practicum.konkov.api.KVServer;
 import ru.practicum.konkov.managers.*;
 import ru.practicum.konkov.task.*;
 
@@ -14,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
        KVServer server =  new KVServer();
-       server.start();
+       server.start();//000
        TaskManager manager = Managers.getDefault();
         fillData(manager);
         TaskManager httpTaskManager = HTTPTaskManager.load();

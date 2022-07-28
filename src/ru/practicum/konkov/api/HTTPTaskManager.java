@@ -1,4 +1,4 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import ru.practicum.konkov.managers.FileBackedTasksManager;
 import ru.practicum.konkov.managers.TaskManager;
@@ -7,7 +7,7 @@ import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
 public class HTTPTaskManager extends FileBackedTasksManager implements TaskManager {
-    private static final String key = "test_key";
+    private static final String KEY = "test_key";
 
     public static KVTaskClient taskClient;
 
@@ -18,11 +18,14 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
 
     public HTTPTaskManager(String url) {
         this.url = url;
-        taskClient = new KVTaskClient(url);
+
     }
 
     @Override
     public void save() {
+        if (taskClient == null){
+            taskClient = new KVTaskClient(url);
+        }
         String header = "id,type,name,status,description,startTime,duration,epic";
         String manager = header + "\n";
         for (Task task : tasks.values()) {
@@ -35,15 +38,18 @@ public class HTTPTaskManager extends FileBackedTasksManager implements TaskManag
             manager = manager + subtask.toFileString() + "\n";
         }
         manager = manager + "\n" + super.historyToString(history);
-        taskClient.put(key, manager);
+        taskClient.put(KEY, manager);
     }
 
 
     public static HTTPTaskManager load() {
         String fileContents = null;
+        if (taskClient == null){
+            taskClient = new KVTaskClient(url);
+        }
         HTTPTaskManager manager = new HTTPTaskManager(url);
         manager.fillBusyIntervals();
-        fileContents = taskClient.load(key);
+        fileContents = taskClient.load(KEY);
 
         int historyLine = 0;
         String[] lines = fileContents.split("\n");

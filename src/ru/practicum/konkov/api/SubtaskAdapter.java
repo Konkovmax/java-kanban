@@ -1,10 +1,9 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
 import ru.practicum.konkov.task.Subtask;
 
@@ -15,11 +14,9 @@ import java.time.ZonedDateTime;
 import static ru.practicum.konkov.managers.InMemoryTaskManager.zone;
 import static ru.practicum.konkov.task.Task.DATE_TIME_FORMATTER;
 
-public class EpicAdapter extends TypeAdapter<Epic> {
-
-
+public class SubtaskAdapter extends TypeAdapter<Subtask> {
     @Override
-    public void write(JsonWriter writer, Epic task) throws IOException {
+    public void write(JsonWriter writer, Subtask task) throws IOException {
         writer.beginObject();
         writer.name("id");
         writer.value(task.getId());
@@ -29,9 +26,9 @@ public class EpicAdapter extends TypeAdapter<Epic> {
         writer.value(task.getDescription());
         writer.name("status");
         writer.value(task.getStatus().toString());
-        if(task.getStartTime()!=null){
-        writer.name("endTime");
-        writer.value(task.getEndTime().format(DATE_TIME_FORMATTER));
+        writer.name("epicId");
+        writer.value(task.getEpicId());
+        if (task.getStartTime() != null) {
             writer.name("startTime");
             writer.value(task.getStartTime().format(DATE_TIME_FORMATTER));
             writer.name("duration");
@@ -41,8 +38,8 @@ public class EpicAdapter extends TypeAdapter<Epic> {
     }
 
     @Override
-    public Epic read(JsonReader reader) throws IOException {
-        Epic task = new Epic("name","descr");
+    public Subtask read(JsonReader reader) throws IOException {
+        Subtask task = new Subtask("name", "descr", Status.NEW, 2);
         reader.beginObject();
         String fieldname = null;
 
@@ -56,7 +53,11 @@ public class EpicAdapter extends TypeAdapter<Epic> {
                 token = reader.peek();
                 task.setId(reader.nextInt());
             }
-            if("description".equals(fieldname)) {
+            if ("epicId".equals(fieldname)) {
+                token = reader.peek();
+                task.setEpicId(reader.nextInt());
+            }
+            if ("description".equals(fieldname)) {
                 token = reader.peek();
                 task.setDescription(reader.nextString());
             }
@@ -64,7 +65,7 @@ public class EpicAdapter extends TypeAdapter<Epic> {
                 token = reader.peek();
                 task.setName(reader.nextString());
             }
-            if("status".equals(fieldname)) {
+            if ("status".equals(fieldname)) {
                 token = reader.peek();
                 task.setStatus(Status.valueOf(reader.nextString()));
             }
@@ -72,11 +73,7 @@ public class EpicAdapter extends TypeAdapter<Epic> {
                 token = reader.peek();
                 task.setStartTime(ZonedDateTime.of(LocalDateTime.parse(reader.nextString(), DATE_TIME_FORMATTER), zone));
             }
-            if ("endTime".equals(fieldname)) {
-                token = reader.peek();
-                task.setEndTime(ZonedDateTime.of(LocalDateTime.parse(reader.nextString(), DATE_TIME_FORMATTER), zone));
-            }
-            if("duration".equals(fieldname)) {
+            if ("duration".equals(fieldname)) {
                 token = reader.peek();
                 task.setDuration(reader.nextInt());
             }
@@ -85,4 +82,3 @@ public class EpicAdapter extends TypeAdapter<Epic> {
         return task;
     }
 }
-

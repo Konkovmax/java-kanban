@@ -1,18 +1,16 @@
 package ru.practicum.konkov.tests;
 
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.function.Executable;
-import ru.practicum.konkov.exceptions.EmptyListException;
+
+import ru.practicum.konkov.api.KVServer;
 import ru.practicum.konkov.exceptions.NotFoundException;
-import ru.practicum.konkov.exceptions.WrongIdException;
 import ru.practicum.konkov.managers.TaskManager;
 import ru.practicum.konkov.task.Epic;
 import ru.practicum.konkov.task.Status;
 import ru.practicum.konkov.task.Subtask;
 import ru.practicum.konkov.task.Task;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.IOException;
 import java.time.ZonedDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,10 +20,10 @@ import static ru.practicum.konkov.managers.InMemoryTaskManager.START_DAY_OF_TASK
 abstract class TaskManagerTest<T extends TaskManager> {
     public T taskManager;
 
-    public abstract T createTaskManager();
+    public abstract T createTaskManager() throws IOException;
 
     @BeforeEach
-    private void updateTaskManager() {
+    private void updateTaskManager() throws IOException {
         taskManager = createTaskManager();
     }
 

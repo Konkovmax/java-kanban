@@ -1,4 +1,4 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;

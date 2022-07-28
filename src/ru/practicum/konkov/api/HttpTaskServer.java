@@ -1,4 +1,4 @@
-package ru.practicum.konkov.API;
+package ru.practicum.konkov.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -28,12 +28,15 @@ public class HttpTaskServer {
     public HttpServer httpServer;
     public FileBackedTasksManager fileTasksManager = new FileBackedTasksManager("backedtasks.csv");
     public InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
-    public static GsonBuilder builder = new GsonBuilder()
+
+    // мне кажется я пытался так сделать, но у меня что-то не заработало... почему-то...
+    //  и придумал вот такое...
+    public static Gson gson = new GsonBuilder()
             .registerTypeAdapter(Task.class, new TaskAdapter())
             .registerTypeAdapter(Subtask.class, new SubtaskAdapter())
             .registerTypeAdapter(InMemoryHistoryManager.class, new HistoryAdapter())
-            .registerTypeAdapter(Epic.class, new EpicAdapter());
-    Gson gson = builder.create();
+            .registerTypeAdapter(Epic.class, new EpicAdapter())
+            .create();
 
     public static void main(String[] args) throws IOException {
         HttpTaskServer taskServer = new HttpTaskServer();
